@@ -504,3 +504,165 @@ In summary, `map()` is used for transforming each element of an array, `filter()
 ## What is module bundling?
 Module bundling is the process of taking multiple JavaScript files (modules) and combining them into a single file (or a few files) that can be included in a web application. This is typically done to improve performance by reducing the number of HTTP requests needed to load the application, as well as to manage dependencies between modules. Module bundlers, such as Webpack, Rollup, and Parcel, analyze the dependency graph of the modules and create optimized bundles that can be efficiently loaded by the browser. They also often include features like code splitting, tree shaking, and hot module replacement to further enhance performance and development experience. Module bundling is an essential part of modern JavaScript development, especially for large applications with many dependencies.
 For example, if you have multiple JavaScript files that import each other, a module bundler can analyze these imports and create a single bundle that includes all the necessary code. This allows you to write modular code while still delivering an optimized bundle to the client. Additionally, module bundlers can handle various types of assets (like CSS, images, etc.) and can be configured to perform tasks like minification and transpilation, making them a crucial tool in the modern JavaScript development workflow.
+
+## What is execution order between `setTimeout`, `Promise`, and `async/await`?
+The execution order between `setTimeout`, `Promise`, and `async/await` in JavaScript is determined by the event loop and the microtask queue. When a `setTimeout` is called, it schedules a callback to be executed after a specified delay, and this callback is placed in the task queue. Promises, on the other hand, are part of the microtask queue, which has a higher priority than the task queue. When a Promise is resolved or rejected, its associated callbacks are placed in the microtask queue and will be executed before any tasks in the task queue. The `async/await` syntax is built on top of Promises, so when an `async` function is called, it returns a Promise. When an `await` expression is encountered, it pauses the execution of the async function until the Promise is resolved or rejected, at which point the rest of the function continues executing as a microtask. In summary, the execution order is as follows: first, all microtasks (including Promise callbacks and async function continuations) are executed before any tasks from the task queue (such as `setTimeout` callbacks) are processed.
+`Example of execution order between setTimeout, Promise, and async/await:`
+```javascript
+console.log('Start');
+setTimeout(() => {
+  console.log('setTimeout callback'); // This will be executed after the current call stack is empty and all microtasks are processed
+}, 0);
+Promise.resolve().then(() => {
+  console.log('Promise callback'); // This will be executed before the setTimeout callback because it is a microtask
+});
+async function asyncFunction() {
+  console.log('Async function start');
+  await Promise.resolve();
+  console.log('Async function end'); // This will be executed after the Promise callback because it is a continuation of the async function
+}
+asyncFunction();
+```
+In this example, the output will be:
+```
+Start
+Async function start
+Promise callback
+Async function end
+setTimeout callback
+```
+This demonstrates the execution order where the `Promise` callback is executed before the `setTimeout` callback, and the continuation of the `async` function is executed after the `Promise` callback but before the `setTimeout` callback.
+
+## What is idempotency in APIs (JS perspective)?
+Idempotency in APIs refers to the property of an operation where performing the same operation multiple times has the same effect as performing it once. In the context of JavaScript and APIs, an idempotent API endpoint is one that can be called multiple times with the same parameters without causing unintended side effects or changes in state. This is particularly important for operations that modify data, such as creating, updating, or deleting resources. Idempotent APIs help ensure that clients can safely retry requests in case of network failures or other issues without worrying about duplicate actions being performed.
+`Example of idempotency in APIs:`
+```javascript
+// Example of an idempotent API endpoint for updating a resource
+app.put('/api/resource/:id', (req, res) => {
+  const resourceId = req.params.id;
+  const newData = req.body;
+  
+  // Update the resource with the new data
+  updateResource(resourceId, newData)
+    .then(() => {
+      res.status(200).send('Resource updated successfully');
+    })
+    .catch((error) => {
+      res.status(500).send('Error updating resource');
+    });
+});
+```
+In this example, the `PUT` endpoint for updating a resource is designed to be idempotent. If a client sends the same update request multiple times with the same `resourceId` and `newData`, the outcome will be the same: the resource will be updated to the new data, and the response will indicate success. This allows clients to safely retry the request if needed without worrying about unintended consequences or duplicate updates.
+
+## What is structuredClone()?
+`structuredClone()` is a built-in JavaScript function that creates a deep copy of a given value, including complex data structures like objects, arrays, and even certain types of functions. It is designed to handle circular references and can clone a wide variety of data types, including primitives, objects, arrays, Maps, Sets, and more. The `structuredClone()` function is particularly useful for creating deep copies of data without the need for external libraries or custom cloning functions. It is part of the HTML Living Standard and is supported in modern browsers.
+`Example of using structuredClone():`
+```javascript
+const original = {
+  name: "John",
+  age: 30,
+  address: {
+    city: "New York",
+    zip: "10001"
+  }
+};
+const cloned = structuredClone(original);
+cloned.name = "Jane";
+cloned.address.city = "Los Angeles";
+console.log(original.name); // Logs: John (original object remains unchanged)
+console.log(original.address.city); // Logs: New York (original object remains unchanged)
+console.log(cloned.name); // Logs: Jane (cloned object has the new name)
+console.log(cloned.address.city); // Logs: Los Angeles (cloned object has the new city)
+```
+In this example, we use `structuredClone()` to create a deep copy of the `original` object. Modifying the properties of the `cloned` object does not affect the `original` object, demonstrating that a true deep copy has been made. This function is particularly useful for scenarios where you need to duplicate complex data structures without worrying about shared references or unintended side effects.
+
+## What is dynamic import?
+Dynamic import is a feature in JavaScript that allows you to load modules asynchronously at runtime, rather than at the initial load time of the application. This is achieved using the `import()` function, which returns a promise that resolves to the module being imported. Dynamic imports are useful for code-splitting and lazy-loading modules, which can improve the performance of web applications by reducing the initial load time and only loading code when it is needed.
+`Example of using dynamic import:`
+```javascript
+function loadModule(moduleName) {
+  import(`./modules/${moduleName}.js`)
+    .then(module => {
+      // Use the imported module
+      module.someFunction();
+    })
+    .catch(error => {
+      console.error('Error loading module:', error);
+    });
+}
+loadModule('myModule'); // This will dynamically import the myModule.js file
+```
+In this example, the `loadModule` function takes a `moduleName` as an argument and uses the `import()` function to dynamically load the corresponding module from the `./modules/` directory. The imported module can then be used within the `.then()` block, and any errors that occur during the import process are handled in the `.catch()` block. Dynamic imports allow for more efficient loading of code and can help improve the performance of web applications by only loading what is necessary when it is needed.
+
+## What is tail call optimization?
+Tail call optimization is a technique used by JavaScript engines to optimize recursive function calls that are in tail position. A tail call is a function call that is the last operation performed in a function before it returns. When a function makes a tail call, the JavaScript engine can optimize the call by reusing the current function's stack frame instead of creating a new one for the called function. This allows for more efficient memory usage and can prevent stack overflow errors in cases of deep recursion. Tail call optimization is particularly beneficial for functions that involve recursive calls, such as those that process linked lists or perform mathematical calculations.
+`Example of tail call optimization:`
+```javascript
+function factorial(n, acc = 1) {
+  if (n <= 1) return acc;
+  return factorial(n - 1, n * acc); // Tail call
+}
+console.log(factorial(5)); // Logs: 120
+```
+In this example, the `factorial` function is defined in a way that the recursive call to `factorial` is the last operation performed in the function (tail call). The JavaScript engine can optimize this tail call by reusing the same stack frame for each recursive call, allowing it to compute the factorial of large numbers without running into a stack overflow error. Tail call optimization is an important feature for improving the performance and reliability of recursive functions in JavaScript.
+
+## What is optional chaining?
+Optional chaining is a feature in JavaScript that allows you to safely access nested properties of an object without having to check for the existence of each level of the object hierarchy. It is denoted by the `?.` operator and provides a way to handle cases where a property may be `null` or `undefined`. When you use optional chaining, if any part of the chain is `null` or `undefined`, the entire expression will short-circuit and return `undefined` instead of throwing an error. This can help prevent runtime errors and make your code more concise and easier to read.
+`Example of using optional chaining:`
+```javascript
+const user = {
+  name: "John",
+  address: {
+    city: "New York"
+  }
+};
+console.log(user?.address?.city); // Logs: New York (accessing nested property safely)
+console.log(user?.contact?.email); // Logs: undefined (contact is undefined, but no error is thrown)
+```
+In this example, we use optional chaining to access the `city` property of the `address` object safely. If the `address` property were `null` or `undefined`, the expression would return `undefined` instead of throwing an error. Similarly, when trying to access the `email` property of the `contact` object, which does not exist, it returns `undefined` without causing a runtime error. Optional chaining is a powerful feature that helps improve the robustness and readability of your code when dealing with complex objects.
+
+## What is nullish coalescing?
+Nullish coalescing is a feature in JavaScript that provides a way to handle `null` or `undefined` values in expressions. It is denoted by the `??` operator and allows you to specify a default value that will be used if the left-hand side of the operator is `null` or `undefined`. This is particularly useful for providing fallback values without having to check for falsy values like `0`, `''`, or `false`, which are not considered nullish. The nullish coalescing operator only considers `null` and `undefined` as nullish, making it a more precise way to handle default values in certain situations.
+`Example of using nullish coalescing:`
+```javascript
+const userInput = null;
+const defaultValue = "Default Value";
+const result = userInput ?? defaultValue; // result will be "Default Value" because userInput is null
+console.log(result); // Logs: Default Value
+const anotherInput = 0;
+const anotherResult = anotherInput ?? defaultValue; // anotherResult will be 0 because 0 is not nullish
+console.log(anotherResult); // Logs: 0
+```
+In this example, we use the nullish coalescing operator to provide a default value for `userInput` when it is `null`. The `result` variable will be assigned the value of `defaultValue` because `userInput` is `null`. However, when we use the operator with `anotherInput`, which is `0`, it does not consider `0` as nullish, so `anotherResult` will be assigned the value of `0`. This demonstrates how nullish coalescing allows for more precise handling of default values based on whether a value is truly nullish or just falsy.
+
+## What is `runtime` vs `compile` time in JS?
+Runtime and compile time are two different phases in the lifecycle of a JavaScript program. Compile time refers to the phase when the JavaScript code is being parsed and compiled by the JavaScript engine. During this phase, the engine checks for syntax errors, creates an abstract syntax tree (AST), and prepares the code for execution. Compile time is when variable declarations are hoisted, and function declarations are processed. On the other hand, runtime refers to the phase when the compiled code is actually executed. During runtime, the JavaScript engine executes the code line by line, manages memory, handles events, and performs operations based on the logic defined in the code. Runtime is when variables are assigned values, functions are called, and any dynamic behavior of the program occurs. Understanding the distinction between compile time and runtime is important for debugging and optimizing JavaScript code effectively.
+For example, consider the following code:
+```javascript
+console.log(x); // This will log 'undefined' due to hoisting (compile time)
+var x = 10; // Variable declaration is hoisted, but assignment happens at runtime
+function foo() {
+    console.log("Hello, World!"); // This function is processed at compile time
+}
+foo(); // This will log "Hello, World!" at runtime
+```
+In this example, the variable `x` is declared using `var`, which means it is hoisted to the top of its scope during compile time. However, the assignment of `10` to `x` happens at runtime. As a result, when we log `x` before the assignment, it outputs `undefined`. The function `foo` is also processed at compile time, but it is executed at runtime when we call it, resulting in the output "Hello, World!". This illustrates the difference between compile time and runtime in JavaScript.
+
+## What is memory profiling in JS?
+Memory profiling in JavaScript is the process of analyzing and optimizing the memory usage of a JavaScript application. It involves identifying memory leaks, understanding how memory is allocated and deallocated, and optimizing the performance of the application by managing memory more efficiently. Memory profiling can be done using various tools and techniques, such as browser developer tools (like Chrome DevTools), which provide features for tracking memory usage, taking heap snapshots, and analyzing memory allocation over time. By using memory profiling, developers can identify areas of their code that may be consuming excessive memory or causing memory leaks, and make necessary adjustments to improve the overall performance and stability of their applications.
+For example, in Chrome DevTools, you can use the Memory panel to take heap snapshots and analyze memory usage. This allows you to see how much memory is being used by different objects and identify any potential memory leaks. You can also use the Timeline panel to track memory allocation over time and see how it changes as you interact with your application. By regularly profiling your application's memory usage, you can ensure that it remains efficient and responsive, especially as it grows in complexity.
+
+## What is event delegation?
+Event delegation is a technique in JavaScript that allows you to handle events on a parent element instead of attaching event listeners to individual child elements. This is achieved by taking advantage of event bubbling, where an event propagates up the DOM tree from the target element to its ancestors. By attaching a single event listener to a common ancestor, you can manage events for multiple child elements efficiently, especially when dealing with dynamic content that may be added or removed from the DOM. Event delegation can improve performance and reduce memory usage by minimizing the number of event listeners needed in your application.
+`Example of event delegation:`
+```javascript
+// Instead of attaching event listeners to each button, we attach one listener to the parent element
+const parentElement = document.getElementById('buttonContainer');
+parentElement.addEventListener('click', function(event) {
+  if (event.target && event.target.matches('button')) {
+    console.log('Button clicked:', event.target.textContent);
+  }
+});
+```
+In this example, we attach a single click event listener to the `parentElement` that contains multiple buttons. When any button is clicked, the event listener checks if the event target matches the selector for a button and then logs the text content of the clicked button. This approach allows us to manage events for all buttons within the container without needing to attach individual listeners to each button, making it more efficient and easier to maintain, especially when buttons are dynamically added or removed from the DOM.
+

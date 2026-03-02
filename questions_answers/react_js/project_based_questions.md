@@ -1917,4 +1917,520 @@ module.exports = {
 When you run your build process, the bundle analyzer will open a visual representation of your bundle, allowing you to see which modules are contributing to the size and identify areas for optimization.
 By implementing code splitting and using bundle analysis, you can significantly improve the performance of your React app by reducing the initial load time and optimizing the bundle size.
 
+## Build a complete authentication flow UI (Signup -> Login -> Logout).
+Here is an example of how to build a complete authentication flow UI in React, including Signup, Login, and Logout functionality:
+
+```jsx
+import React, { useState } from 'react';
+function AuthFlow() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignup, setIsSignup] = useState(false);
+
+  const handleSignup = () => {
+    // Simulate signup logic (replace with actual API call)
+    if (username && password) {
+      alert('Signup successful! Please log in.');
+      setIsSignup(false);
+    } else {
+      alert('Please enter a username and password.');
+    }
+  };
+
+  const handleLogin = () => {
+    // Simulate login logic (replace with actual API call)
+    if (username === 'user' && password === 'password') {
+      setIsAuthenticated(true);
+      alert('Login successful!');
+    } else {
+      alert('Invalid username or password.');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUsername('');
+    setPassword('');
+    alert('Logged out successfully!');
+  };
+
+  return (
+    <div>
+      <h1>Authentication Flow</h1>
+      {isAuthenticated ? (
+        <div>
+          <p>Welcome, {username}!</p>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      ) : (
+        <div>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {isSignup ? (
+            <>
+              <button onClick={handleSignup}>Sign Up</button>
+              <p>
+                Already have an account?{' '}
+                <button onClick={() => setIsSignup(false)}>Log In</button>
+              </p>
+            </>
+          ) : (
+            <>
+              <button onClick={handleLogin}>Log In</button>
+              <p>
+                Don't have an account?{' '}
+                <button onClick={() => setIsSignup(true)}>Sign Up</button>
+              </p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+export default AuthFlow;
+```
+In this code, we have an `AuthFlow` component that manages the authentication state, username, password, and whether the user is in signup mode. The `handleSignup` function simulates a signup process, while the `handleLogin` function simulates a login process with hardcoded credentials. The `handleLogout` function resets the authentication state and clears the username and password. The UI conditionally renders different content based on whether the user is authenticated or not, allowing for a complete authentication flow with signup, login, and logout functionality. You can replace the simulated logic with actual API calls to make it functional in a real application.
+
+## Implement persistent login using localStorage / sessionStorage.
+Here is an example of how to implement persistent login using `localStorage` in React:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    // Simulate login and store username in localStorage
+    const user = 'JohnDoe'; // Replace with actual login logic
+    localStorage.setItem('username', user);
+    setUsername(user);
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('username');
+    setUsername('');
+    setIsLoggedIn(false);
+  };
+
+  return (
+    <div>
+      <h1>Persistent Login Example</h1>
+      {isLoggedIn ? (
+        <div>
+          <p>Welcome, {username}!</p>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      ) : (
+        <button onClick={handleLogin}>Login</button>
+      )}
+    </div>
+  );
+}
+export default App;
+```
+In this code, we use `localStorage` to store the username when the user logs in. The `useEffect` hook checks if there is a stored username when the component mounts, and if so, it sets the login state accordingly. The `handleLogin` function simulates a login process and stores the username in `localStorage`, while the `handleLogout` function removes the username from `localStorage` and updates the login state. This implementation allows for persistent login across page refreshes, as the user's login state is maintained in `localStorage`. You can replace the simulated login logic with your actual authentication mechanism to make it functional in a real application.
+
+## Create a protected dashboard layout with nested routes.
+Here is an example of how to create a protected dashboard layout with nested routes in React using React Router:
+
+```jsx
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+function Dashboard() {
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <Switch>
+        <Route path="/dashboard/profile" component={Profile} />
+        <Route path="/dashboard/settings" component={Settings} />
+        <Redirect from="/dashboard" to="/dashboard/profile" />
+      </Switch>
+    </div>
+  );
+}
+function Profile() {
+  return <h2>Profile Page</h2>;
+}
+function Settings() {
+  return <h2>Settings Page</h2>;
+}
+function App() {
+  const isAuthenticated = true; // Replace with actual authentication logic
+  return (
+    <Router>
+      <Switch>
+        <Route path="/dashboard">
+          {isAuthenticated ? <Dashboard /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/login" component={Login} />
+        <Redirect from="/" to="/dashboard" />
+      </Switch>
+    </Router>
+  );
+}
+function Login() {
+  return <h1>Login Page</h1>;
+}
+export default App;
+```
+In this code, we have a `Dashboard` component that serves as the main layout for the dashboard. It contains nested routes for the `Profile` and `Settings` pages. The `App` component uses React Router to define the routes for the application. The `/dashboard` route is protected, meaning that it checks if the user is authenticated before rendering the `Dashboard` component. If the user is not authenticated, they are redirected to the `/login` page. The nested routes within the `Dashboard` component allow for a structured and organized layout, where users can navigate between different sections of the dashboard while maintaining a consistent layout. You can replace the simulated authentication logic with your actual authentication mechanism to make it functional in a real application.
+
+## Build a user profile page with update functionality.
+Here is an example of how to build a user profile page with update functionality in React:
+
+```jsx
+import React, { useState } from 'react';
+function UserProfile() {
+  const [profile, setProfile] = useState({
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfile((prevProfile) => ({
+      ...prevProfile,
+      [name]: value,
+    }));
+  };
+  const handleSave = () => {
+    setIsEditing(false);
+    // Here you can also add code to save the profile data to an API or local storage
+  };
+  return (
+    <div>
+      <h1>User Profile</h1>
+      {isEditing ? (
+        <div>
+          <input
+            type="text"
+            name="name"
+            value={profile.name}
+            onChange={handleChange}
+          />
+          <input
+            type="email"
+            name="email"
+            value={profile.email}
+            onChange={handleChange}
+          />
+          <button onClick={handleSave}>Save</button>
+        </div>
+      ) : (
+        <div>
+          <p>Name: {profile.name}</p>
+          <p>Email: {profile.email}</p>
+          <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+        </div>
+      )}
+    </div>
+  );
+}
+export default UserProfile;
+```
+In this code, we have a `UserProfile` component that manages the user's profile data and editing state. The `profile` state contains the user's name and email, while the `isEditing` state determines whether the profile is in edit mode. When the "Edit Profile" button is clicked, the component switches to edit mode, allowing the user to modify their name and email. The `handleChange` function updates the profile state as the user types, and the `handleSave` function exits edit mode and can be extended to save the profile data to an API or local storage. This implementation provides a simple user profile page where users can view and edit their profile information.
+
+## Implement global error handling UI (error pages, toasts).
+Here is an example of how to implement global error handling UI in React using error pages and toasts:
+
+```jsx
+import React, { useState } from 'react';
+function App() {
+  const [error, setError] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+
+  const simulateError = () => {
+    try {
+      throw new Error('Something went wrong!');
+    } catch (err) {
+      setError(err.message);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
+    }
+  };
+
+  return (
+    <div>
+      <h1>Global Error Handling Example</h1>
+      <button onClick={simulateError}>Simulate Error</button>
+      {error && (
+        <div className="error-page">
+          <h2>Error Occurred</h2>
+          <p>{error}</p>
+        </div>
+      )}
+      {showToast && (
+        <div className="toast">
+          <p>{error}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+export default App;
+```
+In this code, we have an `App` component that simulates an error when the "Simulate Error" button is clicked. The error message is stored in the `error` state, and a toast notification is shown using the `showToast` state. The error page is displayed when there is an error, and the toast notification appears for a short duration before disappearing. You can customize the styles for the error page and toast notification in your CSS to create a visually appealing error handling UI. This implementation provides a way to handle errors globally in your React application, giving users feedback when something goes wrong.
+
+## Build a reusable form input component with validation props.
+Here is an example of how to build a reusable form input component with validation props in React:
+
+```jsx
+import React from 'react';
+function FormInput({ label, type = 'text', value, onChange, validation }) {
+  const [error, setError] = React.useState('');
+  const handleChange = (e) => {
+    const { value } = e.target;
+    if (validation) {
+      const errorMessage = validation(value);
+      setError(errorMessage);
+    }
+    onChange(e);
+  };
+  return (
+    <div>
+      <label>{label}</label>
+      <input type={type} value={value} onChange={handleChange} />
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+    </div>
+  );
+}
+export default FormInput;
+```
+In this code, we have a `FormInput` component that accepts props for the label, input type, value, onChange handler, and a validation function. The `handleChange` function checks if a validation function is provided and calls it with the current input value. If there is an error message returned from the validation function, it is displayed below the input field. This reusable component can be used throughout your application to create consistent form inputs with built-in validation logic. You can customize the styles and validation logic as needed to fit your specific use case.
+
+## Implement API retry mechanism of failed requests.
+Here is an example of how to implement an API retry mechanism for failed requests in React using Axios:
+
+```jsx
+import React, { useState } from 'react';
+import axios from 'axios';
+function App() {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchDataWithRetry = async (url, retries = 3) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(url);
+      setData(response.data);
+      setError(null);
+    } catch (err) {
+      if (retries > 0) {
+        console.log(`Retrying... (${3 - retries + 1})`);
+        fetchDataWithRetry(url, retries - 1);
+      } else {
+        setError('Failed to fetch data after multiple attempts.');
+        setData(null);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <h1>API Retry Mechanism Example</h1>
+      <button onClick={() => fetchDataWithRetry('https://api.example.com/data')}>
+        Fetch Data
+      </button>
+      {isLoading && <p>Loading...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+    </div>
+  );
+}
+export default App;
+```
+In this code, we have an `App` component that includes a `fetchDataWithRetry` function to handle API requests with a retry mechanism. The function takes a URL and the number of retries as parameters. If the API request fails, it will automatically retry up to the specified number of times. If all attempts fail, an error message is displayed. The component also manages loading and error states to provide feedback to the user during the API request process. You can replace the URL in the `fetchDataWithRetry` function with your actual API endpoint to make it functional in a real application.
+
+## Build a multi-language (i18n) UI using react-i18next.
+Here is an example of how to build a multi-language (i18n) UI using `react-i18next` in React:
+
+```jsx
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+function App() {
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
+  return (
+    <div>
+      <h1>{t('welcome_message')}</h1>
+      <button onClick={() => changeLanguage('en')}>English</button>
+      <button onClick={() => changeLanguage('es')}>Spanish</button>
+    </div>
+  );
+}
+export default App;
+```
+In this code, we use the `useTranslation` hook from the `react-i18next` library to manage translations in our React application. The `t` function is used to retrieve the translated string for the given key (in this case, 'welcome_message'). The `changeLanguage` function allows users to switch between languages by calling the `changeLanguage` method from the `i18n` instance. You will need to set up your translation files (e.g., `en.json`, `es.json`) with the appropriate keys and values for each language to make this work. This implementation provides a simple way to create a multi-language UI in React using `react-i18next`.
+
+## Implement lazy-loaded routes for large applications.
+Here is an example of how to implement lazy-loaded routes for large applications in React using React Router and React's `lazy` and `Suspense`:
+
+```jsx
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+const Home = lazy(() => import('./Home'));
+const About = lazy(() => import('./About'));
+const Contact = lazy(() => import('./Contact'));
+function App() {
+  return (
+    <Router>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route path="/about" component={About} />
+          <Route path="/contact" component={Contact} />
+        </Switch>
+      </Suspense>
+    </Router>
+  );
+}
+export default App;
+```
+In this code, we use React's `lazy` function to dynamically import the route components (`Home`, `About`, and `Contact`). The `Suspense` component is used to wrap the routes and provides a fallback UI (in this case, a simple "Loading..." message) while the lazy-loaded components are being fetched. This approach allows you to split your application into smaller chunks, which can improve the initial load time of your app by only loading the necessary components when they are needed. You can replace the fallback UI with a more sophisticated loading indicator if desired. This implementation is particularly beneficial for large applications with many routes and heavy components.
+
+## Optimize React performance using React DevTools profiling.
+To optimize React performance using React DevTools profiling, you can follow these steps:
+1. **Install React DevTools**: First, make sure you have the React DevTools extension installed in your browser. You can find it in the Chrome Web Store or Firefox Add-ons.
+2. **Open React DevTools**: Open your React application in the browser and open the React DevTools by clicking on the extension icon or using the browser's developer tools.
+3. **Start Profiling**: In the React DevTools, navigate to the "Profiler" tab. Click on the "Start profiling" button to begin recording the performance of your application.
+4. **Interact with Your App**: While profiling, interact with your application as you normally would. This will allow you to capture the performance of various components and actions within your app.
+5. **Stop Profiling**: After you have interacted with your app, click on the "Stop profiling" button in the React DevTools to end the recording.
+6. **Analyze the Results**: The React DevTools will display a flame graph and a ranked list of components based on their render times. You can click on individual components in the flame graph to see more details about their render times and the reasons for re-renders.
+7. **Identify Performance Bottlenecks**: Look for components that take a long time to render or that re-render frequently. These components may be candidates for optimization.
+8. **Optimize Your Code**: Based on the profiling results, you can optimize your code by:
+   - Memoizing components with `React.memo` to prevent unnecessary re-renders.
+   - Using `useCallback` and `useMemo` hooks to memoize functions and values that are passed as props.
+   - Splitting large components into smaller, more manageable pieces.
+   - Avoiding expensive calculations or side effects in the render method.
+   - Using lazy loading for components that are not immediately needed.
+9. **Re-profile After Optimization**: After making optimizations, repeat the profiling process to see if the changes have improved the performance of your application. By regularly profiling and optimizing your React application, you can ensure that it runs efficiently and provides a smooth user experience.
+
+## Implement complete auth flow (signup, login, logout, refresh token).
+Here is an example of how to implement a complete authentication flow in React, including signup, login, logout, and refresh token functionality:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+function AuthFlow() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignup, setIsSignup] = useState(false);
+
+  useEffect(() => {
+    // Check for existing token and refresh if necessary
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Simulate token validation and refresh logic
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleSignup = () => {
+    // Simulate signup logic (replace with actual API call)
+    if (username && password) {
+      alert('Signup successful! Please log in.');
+      setIsSignup(false);
+    } else {
+      alert('Please enter a username and password.');
+    }
+  };
+
+  const handleLogin = () => {
+    // Simulate login logic (replace with actual API call)
+    if (username === 'user' && password === 'password') {
+      localStorage.setItem('token', 'fake-jwt-token'); // Simulate storing a token
+      setIsAuthenticated(true);
+      alert('Login successful!');
+    } else {
+      alert('Invalid username or password.');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setUsername('');
+    setPassword('');
+    setIsAuthenticated(false);
+    alert('Logged out successfully!');
+  };
+
+  return (
+    <div>
+      <h1>Authentication Flow</h1>
+      {isAuthenticated ? (
+        <div>
+          <p>Welcome, {username}!</p>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      ) : (
+        <div>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {isSignup ? (
+            <>
+              <button onClick={handleSignup}>Sign Up</button>
+              <p>
+                Already have an account?{' '}
+                <button onClick={() => setIsSignup(false)}>Log In</button>
+              </p>
+            </>
+          ) : (
+            <>
+              <button onClick={handleLogin}>Log In</button>
+              <p>
+                Don't have an account?{' '}
+                <button onClick={() => setIsSignup(true)}>Sign Up</button>
+              </p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default AuthFlow;
+```
+In this code, we have an `AuthFlow` component that manages the authentication state, username, password, and whether the user is in signup mode. The `useEffect` hook checks for an existing token in `localStorage` when the component mounts and simulates token validation to set the authentication state. The `handleSignup` function simulates a signup process, while the `handleLogin` function simulates a login process with hardcoded credentials and stores a token in `localStorage`. The `handleLogout` function removes the token from `localStorage` and resets the authentication state. The UI conditionally renders different content based on whether the user is authenticated or not, allowing for a complete authentication flow with signup, login, logout, and token management functionality. You can replace the simulated logic with actual API calls to make it functional in a real application.
+
 ## 

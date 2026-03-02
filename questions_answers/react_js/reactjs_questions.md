@@ -709,3 +709,201 @@ test('renders MyButton and handles click event', () => {
 });
 ```
 In this example, we import the necessary modules from React Testing Library and Jest. We render the `MyButton` component and use `screen.getByRole` to find the button element. We then assert that the button is present in the document. Next, we simulate a click event on the button using `fireEvent.click` and assert that a message indicating the button was clicked is displayed in the document. This test verifies that the `MyButton` component renders correctly and responds to user interactions as expected.
+
+## What is reconciliation algorithm in depth?
+The reconciliation algorithm is a key concept in React, a popular JavaScript library for building user interfaces. It is the process by which React updates the DOM to reflect changes in the component's state or props. When a component's state or props change, React creates a new virtual DOM tree and compares it to the previous virtual DOM tree. This comparison is done using a diffing algorithm that identifies what has changed between the two trees. Based on this comparison, React determines the minimum number of changes needed to update the actual DOM efficiently. The reconciliation algorithm helps optimize performance by minimizing unnecessary updates and ensuring that only the parts of the DOM that have changed are re-rendered. Understanding how the reconciliation algorithm works can help developers write more efficient React applications and improve their performance.
+For example, if you have a list of items rendered in a React component and you add a new item to the list, the reconciliation algorithm will compare the new virtual DOM tree with the previous one. It will identify that a new item has been added and will only update the DOM to include that new item, rather than re-rendering the entire list. This efficient updating process is what makes React applications performant and responsive, even as they grow in complexity.
+
+## What is render props pattern?
+The render props pattern is a technique in React for sharing code between components using a prop that is a function. This function, often called a "render prop," allows you to pass a function as a prop to a component, which can then call that function to render content. The render props pattern is useful for creating reusable components that can share logic and state without relying on higher-order components or other patterns. It allows for greater flexibility and composability in your React applications.
+```jsx
+function DataFetcher({ url, render }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
+      });
+  }, [url]);
+
+  return render({ data, loading, error });
+}
+```
+In this example, the `DataFetcher` component takes a `url` prop to fetch data from and a `render` prop, which is a function that receives the fetched data, loading state, and error state. The `DataFetcher` component manages the logic for fetching data and then calls the `render` function to render the appropriate UI based on the current state. This allows you to reuse the data fetching logic across different components while still providing flexibility in how the UI is rendered. The render props pattern promotes code reuse and separation of concerns, making it easier to maintain and scale your React applications.
+
+## What is React memo?
+`React.memo` is a higher-order component that allows you to optimize the performance of your React components by memoizing the rendered output. It is used to prevent unnecessary re-renders of a component when its props have not changed. When you wrap a component with `React.memo`, React will compare the current props with the previous props, and if they are the same, it will skip rendering the component and reuse the previous output. This can improve performance, especially for components that are expensive to render or have complex logic. However, it's important to note that `React.memo` only performs a shallow comparison of props, so if you have complex objects as props, you may need to provide a custom comparison function to ensure that it works correctly.
+```jsx
+const MyComponent = React.memo(function MyComponent(props) {
+  // Component logic and rendering
+});
+```
+In this example, `MyComponent` is wrapped with `React.memo`, which means that it will only re-render if its props change. If the props remain the same between renders, React will skip rendering `MyComponent` and reuse the previous output, improving performance by avoiding unnecessary re-renders. This is particularly useful for components that receive a lot of props or have complex rendering logic, as it can help to reduce the amount of work React has to do when updating the UI.
+
+## What is state normalization?
+State normalization is a technique used in React applications to manage and structure the state in a way that makes it easier to access and update. It involves organizing the state in a flat structure, often using objects or arrays, rather than nesting data deeply. This can help to avoid issues with deeply nested state updates and make it easier to manage relationships between different pieces of state. Normalizing state can also improve performance by reducing the amount of data that needs to be updated when changes occur, as well as making it easier to implement features like caching and memoization. Libraries like Redux often encourage state normalization to help manage complex application state more effectively.
+```javascript
+const normalizedState = {
+  users: {
+    byId: {
+      '1': { id: '1', name: 'Alice' },
+      '2': { id: '2', name: 'Bob' },
+    },
+    allIds: ['1', '2'],
+  },
+};
+```
+In this example, the state is normalized by organizing the users into a `byId` object, where each user is stored with their ID as the key. The `allIds` array keeps track of the order of the user IDs. This structure allows for easy access to individual users by their ID and simplifies updates to the state, as you can directly modify the relevant user without having to navigate through nested structures. State normalization helps to improve the maintainability and performance of your React applications by providing a clear and efficient way to manage complex state.
+
+## What is optimistic UI update?
+Optimistic UI update is a technique in React where the user interface is updated immediately in response to a user action, before the actual data change has been confirmed by the server. This approach provides a more responsive and fluid user experience, as it allows users to see the results of their actions without waiting for a server response. If the server confirms the change, the UI remains as is; if the server returns an error, the UI can be rolled back to its previous state. Optimistic UI updates are commonly used in scenarios like form submissions, liking a post, or adding items to a cart, where immediate feedback is important for user engagement.
+```jsx
+function LikeButton() {
+  const [liked, setLiked] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleLike = () => {
+    // Optimistically update the UI
+    setLiked(true);
+    
+    // Simulate a server request
+    fakeApiRequest()
+      .then(() => {
+        // Server confirms the like, do nothing
+      })
+      .catch(() => {
+        // Server returns an error, roll back the UI
+        setLiked(false);
+        setError('Failed to like the post. Please try again.');
+      });
+  };
+
+  return (
+    <div>
+      <button onClick={handleLike}>{liked ? 'Unlike' : 'Like'}</button>
+      {error && <p>{error}</p>}
+    </div>
+  );
+}
+```
+In this example, the `LikeButton` component uses an optimistic UI update approach. When the user clicks the "Like" button, the `liked` state is immediately set to `true`, giving the user instant feedback. A simulated API request is made to confirm the like action. If the request succeeds, the UI remains unchanged; if it fails, the `liked` state is rolled back to `false`, and an error message is displayed. This technique enhances the user experience by providing immediate feedback while still handling potential errors gracefully.
+
+## What is useTransition?
+`useTransition` is a React hook that allows you to manage the state of a transition in your application. It is used to indicate that a certain part of the UI is in a "transitioning" state, which can be useful for showing loading indicators or preventing user interactions during the transition. The `useTransition` hook returns an array with two values: a boolean indicating whether the transition is currently active, and a function to start the transition. When you call the function to start the transition, it will set the transitioning state to `true`, and you can use this state to conditionally render loading indicators or disable buttons until the transition is complete.
+```jsx
+import { useTransition } from 'react';
+function MyComponent() {
+  const [isPending, startTransition] = useTransition();
+
+  const handleClick = () => {
+    startTransition(() => {
+      // Perform some state updates or data fetching here
+    });
+  };
+
+  return (
+    <div>
+      <button onClick={handleClick} disabled={isPending}>
+        {isPending ? 'Loading...' : 'Click Me'}
+      </button>
+    </div>
+  );
+}
+```
+In this example, the `MyComponent` uses the `useTransition` hook to manage a transition state. When the button is clicked, the `startTransition` function is called, which sets the `isPending` state to `true`. This allows you to conditionally render a loading indicator (in this case, changing the button text to "Loading...") and disable the button while the transition is active. Once the transition is complete, you can set `isPending` back to `false` to re-enable the button and update the UI accordingly. This helps to improve the user experience by providing feedback during asynchronous operations or state updates.
+
+## What is useDeferredValue?
+`useDeferredValue` is a React hook that allows you to defer the rendering of a value until the browser has had a chance to paint. This can be useful for improving the performance of your application by preventing expensive computations or rendering from blocking the main thread. When you use `useDeferredValue`, React will delay the update of the value until the next render cycle, allowing the browser to remain responsive and avoid jank. This is particularly beneficial when you have a component that receives a large amount of data or performs complex calculations, as it can help to ensure that the UI remains smooth and responsive even when there are heavy updates happening in the background.
+```jsx
+import { useDeferredValue } from 'react';
+function MyComponent({ value }) {
+  const deferredValue = useDeferredValue(value);
+
+  return (
+    <div>
+      <p>Current Value: {value}</p>
+      <p>Deferred Value: {deferredValue}</p>
+    </div>
+  );
+}
+```
+In this example, the `MyComponent` receives a `value` prop and uses the `useDeferredValue` hook to create a `deferredValue`. The `deferredValue` will only update after the browser has had a chance to paint, allowing the UI to remain responsive even if the `value` prop changes frequently or involves expensive computations. This can help to improve the performance of your application by preventing unnecessary re-renders and ensuring that the user interface remains smooth and responsive.
+
+## What is React Query / TanStack Query?
+React Query, now known as TanStack Query, is a powerful data-fetching library for React applications. It provides a simple and efficient way to manage server state, handle caching, and synchronize data between the client and server. With React Query, you can easily fetch, cache, and update data in your React components without having to worry about complex state management or manual caching strategies. It also offers features like automatic refetching, pagination, and optimistic updates, making it a great choice for handling asynchronous data in your React applications. By using React Query, you can improve the performance and user experience of your application by ensuring that data is always up-to-date and efficiently managed.
+```jsx
+import { useQuery } from 'react-query';
+function MyComponent() {
+  const { data, error, isLoading } = useQuery('fetchData', () =>
+    fetch('/api/data').then((res) => res.json())
+  );
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  return (
+    <div>
+      <h1>Data:</h1>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </div>
+  );
+}
+```
+In this example, the `MyComponent` uses the `useQuery` hook from React Query to fetch data from an API endpoint. The `useQuery` hook takes a query key ('fetchData') and a function that returns a promise (the fetch request). It returns an object containing the fetched data, any error that occurred, and a loading state. The component conditionally renders a loading message, an error message, or the fetched data based on the state of the query. This demonstrates how React Query simplifies data fetching and state management in React applications, allowing you to focus on building your UI without worrying about the complexities of asynchronous data handling.
+
+## What is React error handling strategy?
+React provides a built-in error handling strategy through the use of Error Boundaries. An Error Boundary is a React component that catches JavaScript errors anywhere in its child component tree, logs those errors, and displays a fallback UI instead of the component tree that crashed. This allows you to gracefully handle errors in your application without crashing the entire app. To create an Error Boundary, you can define a class component that implements the `componentDidCatch` lifecycle method, which is called when an error is thrown in any of its child components. You can also use the `getDerivedStateFromError` static method to update the state and render a fallback UI when an error occurs. By using Error Boundaries, you can improve the user experience by providing a way to handle errors gracefully and prevent the entire application from crashing due to unhandled exceptions.
+```jsx
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    // Update state so the next render will show the fallback UI
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // You can also log the error to an error reporting service
+    console.error('Error caught by Error Boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // You can render any custom fallback UI
+      return <h1>Something went wrong.</h1>;
+    }
+
+    return this.props.children; 
+  }
+}
+```
+In this example, the `ErrorBoundary` component is a class component that implements the error handling strategy in React. It uses the `getDerivedStateFromError` method to update its state when an error occurs, which triggers a re-render to display a fallback UI. The `componentDidCatch` method is used to log the error details for debugging purposes. By wrapping your components with the `ErrorBoundary`, you can ensure that any errors that occur within those components are caught and handled gracefully, preventing the entire application from crashing and providing a better user experience.
+
+## What is testing pyramid in React apps?
+The testing pyramid is a concept in software testing that describes the different levels of testing and their relative importance in ensuring the quality of an application. In the context of React applications, the testing pyramid typically consists of three levels: unit tests, integration tests, and end-to-end (E2E) tests. Unit tests focus on testing individual components or functions in isolation, ensuring that they work as expected. Integration tests verify that different components or modules work together correctly, while E2E tests simulate real user interactions to test the entire application flow. The idea behind the testing pyramid is to have a larger number of unit tests at the base, fewer integration tests in the middle, and even fewer E2E tests at the top, as E2E tests tend to be more complex and time-consuming to run. By following this structure, you can ensure that your React application is thoroughly tested while maintaining a balance between test coverage and efficiency.
+```jsx
+// Example of a simple unit test for a React component using Jest and React Testing Library
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
+import MyComponent from './MyComponent';
+
+test('renders MyComponent with correct text', () => {
+  render(<MyComponent />);
+  const element = screen.getByText(/Hello, World!/i);
+  expect(element).toBeInTheDocument();
+});
+```
+In this example, we have a simple unit test for a React component called `MyComponent`. The test uses Jest and React Testing Library to render the component and check if it contains the text "Hello, World!". This is an example of a unit test, which focuses on testing a single component in isolation. In a complete testing strategy, you would also include integration tests to verify that multiple components work together correctly, and end-to-end tests to simulate user interactions and test the entire application flow. By following the testing pyramid, you can ensure that your React application is well-tested and maintainable.

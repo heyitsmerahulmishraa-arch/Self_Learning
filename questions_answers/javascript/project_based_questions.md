@@ -1147,5 +1147,297 @@ function promisePool(functions, n) {
 }
 ```
 
+## What will be the output of the following code and why?
+console.log(“A”);
+setTimeout(() => console.log(“B”), 0);
+Promise.resolve().then(() => console.log(“C”));
+console.log(“D”);
+Output:
+```
+A
+D
+C
+B
+```
+Explanation:
+1. `console.log("A")` is executed first, so "A" is printed.
+2. `setTimeout(() => console.log("B"), 0)` is called, which schedules "B" to be printed after the current call stack is cleared, but it will be placed in the task queue.
+3. `Promise.resolve().then(() => console.log("C"))` is called, which schedules "C" to be printed after the current call stack is cleared, but it will be placed in the microtask queue, which has higher priority than the task queue.
+4. `console.log("D")` is executed next, so "D" is printed.
+5. After the current call stack is cleared, the microtask queue is processed first, so "C" is printed.
+6. Finally, the task queue is processed, and "B" is printed.
+
+## Create a sleep(ms) function that pauses execution using Promises.
+```javascript
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+```
+without using built-in functions:
+```javascript
+function sleep(ms) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, ms);
+    });
+}
+```
+
+## Write a function that memoizes another function’s results.
+```javascript
+function memoize(func) {
+    const cache = {};
+    return function(...args) {
+        const key = JSON.stringify(args);
+        if (cache[key]) {
+            return cache[key];
+        }
+        const result = func.apply(this, args);
+        cache[key] = result;
+        return result;
+    };
+}
+```
+without using built-in functions:
+```javascript
+function memoize(func) {
+    var cache = {};
+    return function() {
+        var args = Array.prototype.slice.call(arguments);
+        var key = JSON.stringify(args);
+        if (cache[key]) {
+            return cache[key];
+        }
+        var result = func.apply(this, args);
+        cache[key] = result;
+        return result;
+    };
+}
+```
+
+## Convert a function f(a,b,c) into a curried version f(a)(b)(c).
+```javascript
+function curry(func) {
+    return function curried(...args) {
+        if (args.length >= func.length) {
+            return func.apply(this, args);
+        } else {
+            return function(...nextArgs) {
+                return curried.apply(this, args.concat(nextArgs));
+            };
+        }
+    };
+}
+```
+without using built-in functions:
+```javascript
+function curry(func) {
+    return function curried() {
+        var args = Array.prototype.slice.call(arguments);
+        if (args.length >= func.length) {
+            return func.apply(this, args);
+        } else {
+            return function() {
+                var nextArgs = Array.prototype.slice.call(arguments);
+                return curried.apply(this, args.concat(nextArgs));
+            };
+        }
+    };
+}
+```
+
+## Create your own implementation of Function.prototype.bind.
+```javascript
+function customBind(func, context, ...boundArgs) {
+    return function(...args) {
+        return func.apply(context, boundArgs.concat(args));
+    };
+}
+```
+without using built-in functions:
+```javascript
+function customBind(func, context) {
+    var boundArgs = Array.prototype.slice.call(arguments, 2);
+    return function() {
+        var args = Array.prototype.slice.call(arguments);
+        return func.apply(context, boundArgs.concat(args));
+    };
+}
+```
+
+## Write a function to detect circular references in an object.
+```javascript
+function hasCircularReference(obj, seen = new Set()) {
+    if (obj && typeof obj === 'object') {
+        if (seen.has(obj)) {
+            return true;
+        }
+        seen.add(obj);
+        for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (hasCircularReference(obj[key], seen)) {
+                    return true;
+                }
+            }
+        }
+        seen.delete(obj);
+    }
+    return false;
+}
+```
+without using built-in functions:
+```javascript
+function hasCircularReference(obj, seen) {
+    seen = seen || [];
+    if (obj && typeof obj === 'object') {
+        if (seen.indexOf(obj) !== -1) {
+            return true;
+        }
+        seen.push(obj);
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (hasCircularReference(obj[key], seen)) {
+                    return true;
+                }
+            }
+        }
+        seen.pop();
+    }
+    return false;
+}
+```
+
+## Convert:
+[{id: 1, value: “A”}, {id: 2, value: “B”}]
+into: 
+{1: “A”, 2: “B”}
+
+```javascript
+function arrayToObject(arr) {
+    const obj = {};
+    for (let i = 0; i < arr.length; i++) {
+        obj[arr[i].id] = arr[i].value;
+    }
+    return obj;
+}
+```
+without using built-in functions:
+```javascript
+function arrayToObject(arr) {
+    var obj = {};
+    for (var i = 0; i < arr.length; i++) {
+        obj[arr[i].id] = arr[i].value;
+    }
+    return obj;
+}
+```
+
+## Create your own version of Promise.race().
+```javascript
+function customPromiseRace(promises) {
+    return new Promise((resolve, reject) => {
+        promises.forEach(promise => {
+            Promise.resolve(promise)
+                .then(resolve)
+                .catch(reject);
+        });
+    });
+}
+```
+without using built-in functions:
+```javascript
+function customPromiseRace(promises) {
+    return new Promise(function(resolve, reject) {
+        for (var i = 0; i < promises.length; i++) {
+            Promise.resolve(promises[i])
+                .then(resolve)
+                .catch(reject);
+        }
+    });
+}
+```
+
+## Implement a rate limiter that allows a function to be called only N times per second.
+```javascript
+function rateLimiter(func, limit) {
+    let lastCalled = 0;
+    return function(...args) {
+        const now = Date.now();
+        if (now - lastCalled >= 1000 / limit) {
+            lastCalled = now;
+            return func.apply(this, args);
+        }
+    };
+}
+```
+without using built-in functions:
+```javascript
+function rateLimiter(func, limit) {
+    var lastCalled = 0;
+    return function() {
+        var now = new Date().getTime();
+        if (now - lastCalled >= 1000 / limit) {
+            lastCalled = now;
+            return func.apply(this, arguments);
+        }
+    };
+}
+```
+
+## Implement a task queue that executes async tasks sequentially.
+```javascript
+class TaskQueue {
+    constructor() {
+        this.queue = [];
+        this.isRunning = false;
+    }
+    
+    add(task) {
+        this.queue.push(task);
+        this.run();
+    }
+    
+    async run() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        
+        while (this.queue.length > 0) {
+            const task = this.queue.shift();
+            await task();
+        }
+        
+        this.isRunning = false;
+    }
+}
+```
+without using built-in functions:
+```javascript
+function TaskQueue() {
+    this.queue = [];
+    this.isRunning = false;
+}
+TaskQueue.prototype.add = function(task) {
+    this.queue.push(task);
+    this.run();
+};
+TaskQueue.prototype.run = function() {
+    var self = this;
+    if (self.isRunning) return;
+    self.isRunning = true;
+    
+    function next() {
+        if (self.queue.length === 0) {
+            self.isRunning = false;
+            return;
+        }
+        var task = self.queue.shift();
+        Promise.resolve(task()).then(next);
+    }
+    
+    next();
+};
+```
+
+## 
+
 
 

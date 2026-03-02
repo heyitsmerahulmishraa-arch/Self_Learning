@@ -2847,3 +2847,1686 @@ function getConfig(env) {
 }
 module.exports = getConfig;
 ```
+
+## Implement a basic EventEmitter class with on, emit, and off.
+```javascript
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+    on(event, listener) {
+        if (!this.events[event]) {
+            this.events[event] = [];
+        }
+        this.events[event].push(listener);
+    }
+    emit(event, ...args) {
+        if (this.events[event]) {
+            this.events[event].forEach(listener => listener(...args));
+        }
+    }
+    off(event, listenerToRemove) {
+        if (this.events[event]) {
+            this.events[event] = this.events[event].filter(listener => listener !== listenerToRemove);
+        }
+    }
+}
+// Example usage
+const emitter = new EventEmitter();
+function onTestEvent(data) {
+    console.log('Test event received:', data);
+}
+emitter.on('test', onTestEvent);
+emitter.emit('test', { message: 'Hello, EventEmitter!' });
+emitter.off('test', onTestEvent);
+emitter.emit('test', { message: 'This will not be logged' });
+```
+
+## Create a Node.js script to read environment variables from a .env file using dotenv.
+```javascript
+require('dotenv').config();
+const dbUrl = process.env.DB_URL;
+const port = process.env.PORT || 3000;
+console.log(`Database URL: ${dbUrl}`);
+console.log(`Server will run on port: ${port}`);
+```
+
+## Build an Express API to handle GET, POST, PUT, and DELETE routes for a products resource.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+let products = [];
+// GET all products
+app.get('/products', (req, res) => {
+    res.json(products);
+});
+// POST a new product
+app.post('/products', (req, res) => {
+    const product = req.body;
+    products.push(product);
+    res.status(201).json(product);
+});
+// PUT to update a product
+app.put('/products/:id', (req, res) => {
+    const { id } = req.params;
+    const updatedProduct = req.body;
+    products = products.map(product => product.id === id ? updatedProduct : product);
+    res.json(updatedProduct);
+});
+// DELETE a product
+app.delete('/products/:id', (req, res) => {
+    const { id } = req.params;
+    products = products.filter(product => product.id !== id);
+    res.status(204).send();
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Write a Node.js function to deep clone a JavaScript object.
+```javascript
+function deepClone(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+    if (Array.isArray(obj)) {
+        return obj.map(item => deepClone(item));
+    }
+    const clonedObj = {};
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            clonedObj[key] = deepClone(obj[key]);
+        }
+    }
+    return clonedObj;
+}
+// Example usage
+const original = { a: 1, b: { c: 2 } };
+const cloned = deepClone(original);
+console.log(cloned); // { a: 1, b: { c: 2 } }
+cloned.b.c = 3;
+console.log(original.b.c); // 2 (original object remains unchanged)
+```
+
+## Create a script to validate JSON data before saving to a file.
+```javascript
+const fs = require('fs');
+function validateJsonData(data) {
+    try {
+        JSON.parse(data);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
+function saveJsonToFile(data, filePath) {
+    if (validateJsonData(data)) {
+        fs.writeFileSync(filePath, data);
+        console.log('Data saved successfully');
+    } else {
+        console.error('Invalid JSON data. Data not saved.');
+    }
+}
+// Example usage
+const jsonData = JSON.stringify({ name: 'John', age: 30 });
+saveJsonToFile(jsonData, 'data.json');
+```
+
+## Write an Express middleware to limit request body size.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Middleware to limit request body size
+app.use(express.json({ limit: '1mb' })); // Limit body size to 1MB
+// Sample route
+app.post('/data', (req, res) => {
+    res.json({ message: 'Data received successfully' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Build a Node.js program to detect the client’s IP address from a request.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.get('/get-ip', (req, res) => {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    res.json({ ip });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Create an API to upload and serve static images.
+```javascript
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+const upload = multer({ storage });
+// Route to handle image upload
+app.post('/upload', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+    }
+    res.json({ message: 'File uploaded successfully', filePath: req.file.path });
+});
+// Serve static images from the uploads directory
+app.use('/images', express.static(path.join(__dirname, 'uploads')));
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Write a Node.js script to convert CSV data into JSON.
+```javascript
+const fs = require('fs');
+const csv = require('csv-parser');
+function csvToJson(filePath) {
+    const results = [];
+    fs.createReadStream(filePath)
+        .pipe(csv())
+        .on('data', (data) => results.push(data))
+        .on('end', () => {
+            console.log(JSON.stringify(results, null, 2));
+        });
+}
+// Example usage
+csvToJson('data.csv');
+```
+
+## Build a function to measure execution time of async functions.
+```javascript
+async function measureExecutionTime(asyncFunc) {
+    const start = Date.now();
+    await asyncFunc();
+    const end = Date.now();
+    console.log(`Execution time: ${end - start} ms`);
+}
+// Example usage
+async function exampleAsyncFunction() {
+    return new Promise(resolve => setTimeout(resolve, 2000)); // Simulate async work
+}
+measureExecutionTime(exampleAsyncFunction);
+```
+
+## Create an Express API to return custom error message in JSON format.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Sample route that throws an error
+app.get('/error', (req, res) => {
+    res.status(400).json({ error: 'This is a custom error message' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Implement database indexing and query optimization in MongoDB.
+```javascript
+// Example of creating an index in MongoDB and optimizing a query
+const mongoose = require('mongoose');
+const itemSchema = new mongoose.Schema({
+    name: String,
+    category: String,
+    price: Number
+});
+// Create an index on the 'category' field
+itemSchema.index({ category: 1 });
+const Item = mongoose.model('Item', itemSchema);
+// Optimized query using the index
+async function getItemsByCategory(category) {
+    const items = await Item.find({ category }).exec();
+    return items;
+}
+```
+
+## Build an advanced authentication system with:
+Email verification
+Account activation
+Password reset
+
+```javascript
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+const users = []; // In-memory user store (replace with a database in production)
+// Configure nodemailer for email sending
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+// Register route with email verification
+app.post('/register', async (req, res) => {
+    const { email, password } = req.body;
+    const existingUser = users.find(u => u.email === email);
+    if (existingUser) return res.status(400).json({ message: 'Email already registered' });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = { id: Date.now(), email, password: hashedPassword, isActive: false };
+    users.push(user);
+    // Send verification email
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const verificationLink = `http://localhost:${PORT}/verify-email?token=${token}`;
+    await transporter.sendMail({
+        to: email,
+        subject: 'Email Verification',
+        text: `Please verify your email by clicking on the following link: ${verificationLink}`
+    });
+    res.status(201).json({ message: 'Registration successful. Please check your email to verify your account.' });
+});
+// Email verification route
+app.get('/verify-email', (req, res) => {
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ message: 'Invalid token' });
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) return res.status(400).json({ message: 'Invalid or expired token' });
+        const user = users.find(u => u.id === decoded.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        user.isActive = true;
+        res.json({ message: 'Email verified successfully. You can now log in.' });
+    });
+});
+// Password reset request route
+app.post('/request-password-reset', async (req, res) => {
+    const { email } = req.body;
+    const user = users.find(u => u.email === email);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const resetLink = `http://localhost:${PORT}/reset-password?token=${token}`;
+    await transporter.sendMail({
+        to: email,
+        subject: 'Password Reset',
+        text: `You can reset your password by clicking on the following link: ${resetLink}`
+    });
+    res.json({ message: 'Password reset link sent to your email.' });
+});
+// Password reset route
+app.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+    if (!token) return res.status(400).json({ message: 'Invalid token' });
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+        if (err) return res.status(400).json({ message: 'Invalid or expired token' });
+        const user = users.find(u => u.id === decoded.id);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        user.password = await bcrypt.hash(newPassword, 10);
+        res.json({ message: 'Password reset successfully. You can now log in with your new password.' });
+    });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Implement soft delete functionality in MongoDB.
+```javascript
+const mongoose = require('mongoose');
+const itemSchema = new mongoose.Schema({
+    name: String,
+    isDeleted: { type: Boolean, default: false }
+});
+const Item = mongoose.model('Item', itemSchema);
+// Soft delete an item
+async function softDeleteItem(itemId) {
+    await Item.findByIdAndUpdate(itemId, { isDeleted: true });
+}
+// Fetch non-deleted items
+async function getActiveItems() {
+    const items = await Item.find({ isDeleted: false });
+    return items;
+}
+```
+
+## Build an API with transaction handling using Mongoose sessions.
+```javascript
+const mongoose = require('mongoose');
+const itemSchema = new mongoose.Schema({
+    name: String,
+    price: Number
+});
+const Item = mongoose.model('Item', itemSchema);
+async function performTransaction() {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+        await Item.create([{ name: 'Item 1', price: 100 }, { name: 'Item 2', price: 200 }], { session });
+        // You can perform other operations here as part of the transaction
+        await session.commitTransaction();
+        console.log('Transaction committed successfully');
+    } catch (error) {
+        await session.abortTransaction();
+        console.error('Transaction aborted due to error:', error);
+    } finally {
+        session.endSession();
+    }
+}
+```
+
+## Implement API-level caching with Redis and TTL control.
+```javascript
+const express = require('express');
+const redis = require('redis');
+const app = express();
+const PORT = process.env.PORT || 3000;
+const redisClient = redis.createClient();
+redisClient.on('error', (err) => {
+    console.error('Redis error:', err);
+});
+// Middleware to check cache
+function cache(req, res, next) {
+    const key = req.originalUrl;
+    redisClient.get(key, (err, data) => {
+        if (err) throw err;
+        if (data) {
+            res.json(JSON.parse(data));
+        } else {
+            next();
+        }
+    });
+}
+// Sample route with caching
+app.get('/data', cache, (req, res) => {
+    const data = { message: 'This is some data that will be cached' };
+    // Set cache with TTL of 60 seconds
+    redisClient.setex(req.originalUrl, 60, JSON.stringify(data));
+    res.json(data);
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Create a global rate-limiting system per user.
+```javascript
+const express = require('express');
+const rateLimit = require('express-rate-limit');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Rate limiting middleware
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each user to 100 requests per windowMs
+    keyGenerator: (req) => {
+        return req.user ? req.user.id : req.ip; // Use user ID if available, otherwise use IP address
+    },
+    handler: (req, res) => {
+        res.status(429).json({ message: 'Too many requests, please try again later.' });
+    }
+});
+app.use(limiter);
+// Sample route
+app.get('/data', (req, res) => {
+    res.json({ message: 'This is some data' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Build a secure role & permission management system.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+// In-memory user store (replace with a database in production)
+const users = [
+    { id: 1, name: 'Admin User', role: 'admin' },
+    { id: 2, name: 'Regular User', role: 'user' }
+];
+// Middleware to check permissions
+function authorize(allowedRoles) {
+    return (req, res, next) => {
+        const userId = req.headers['user-id']; // Assume user ID is sent in headers
+        const user = users.find(u => u.id == userId);
+        if (!user) return res.status(401).json({ message: 'Unauthorized' });
+        if (!allowedRoles.includes(user.role)) {
+            return res.status(403).json({ message: 'Forbidden' });
+        }
+        req.user = user; // Attach user to request object
+        next();
+    };
+}
+// Sample route accessible only to admin users
+app.get('/admin-data', authorize(['admin']), (req, res) => {
+    res.json({ message: 'This is admin data' });
+});
+// Sample route accessible to both admin and regular users
+app.get('/user-data', authorize(['admin', 'user']), (req, res) => {
+    res.json({ message: 'This is user data' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Implement API request / response encryption.
+```javascript
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+const algorithm = 'aes-256-cbc';
+const secretKey = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);
+function encrypt(text) {
+    const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
+    let encrypted = cipher.update(text, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return iv.toString('hex') + ':' + encrypted;
+}
+function decrypt(encrypted) {
+    const [ivHex, encryptedText] = encrypted.split(':');
+    const ivBuffer = Buffer.from(ivHex, 'hex');
+    const decipher = crypto.createDecipheriv(algorithm, secretKey, ivBuffer);
+    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+}
+// Middleware to encrypt response
+app.use((req, res, next) => {
+    const originalSend = res.send;
+    res.send = function (data) {
+        const encryptedData = encrypt(data);
+        originalSend.call(this, encryptedData);
+    };
+    next();
+});
+// Sample route
+app.get('/data', (req, res) => {
+    res.json({ message: 'This is some data that will be encrypted' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Build a background job processor (email / reports).
+```javascript
+const express = require('express');
+const Queue = require('bull');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Create a Bull queue for background jobs
+const emailQueue = new Queue('emailQueue');
+// Process email jobs
+emailQueue.process(async (job) => {
+    const { email, subject, message } = job.data;
+    // Simulate sending an email (replace with actual email sending logic)
+    console.log(`Sending email to ${email} with subject "${subject}" and message "${message}"`);
+    return Promise.resolve();
+});
+// Route to add email job to the queue
+app.post('/send-email', (req, res) => {
+    const { email, subject, message } = req.body;
+    emailQueue.add({ email, subject, message });
+    res.json({ message: 'Email job added to the queue' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+
+## Design a scalable backend folder structure for a large MERN application.
+```
+- src/
+  - controllers/
+    - userController.js
+    - productController.js
+  - models/
+    - userModel.js
+    - productModel.js
+  - routes/
+    - userRoutes.js
+    - productRoutes.js
+  - services/
+    - emailService.js
+    - paymentService.js
+  - middlewares/
+    - authMiddleware.js
+    - errorMiddleware.js
+  - utils/
+    - logger.js
+    - validator.js
+  - config/
+    - dbConfig.js
+    - appConfig.js
+  app.js
+```
+
+In this folder structure:
+- `controllers/` contains the logic for handling requests and responses.
+- `models/` contains the database schemas and models.
+- `routes/` contains the route definitions for different resources.
+- `services/` contains business logic that can be reused across controllers.
+- `middlewares/` contains custom middleware functions for authentication, error handling, etc.
+- `utils/` contains utility functions and helpers.
+- `config/` contains configuration files for database connections and application settings.
+- `app.js` is the entry point of the application where the Express server is set up and routes are registered.
+
+## Build an Express API to validate request bodies using middleware (no external library).
+```javascript
+const express = require('express');
+const app = express();
+app.use(express.json()); // Middleware to parse JSON request bodies
+// Custom middleware for validating request bodies
+function validateRequestBody(req, res, next) {
+  const { name, age } = req.body;
+  if (typeof name !== 'string' || name.length < 3) {
+    return res.status(400).json({ error: 'Name must be a string with at least 3 characters.' });
+  }
+  if (typeof age !== 'number' || age < 0) {
+    return res.status(400).json({ error: 'Age must be a non-negative number.' });
+  }
+  next(); // If validation passes, proceed to the next middleware or route handler
+}
+app.post('/users', validateRequestBody, (req, res) => {
+  // Handle the request to create a new user
+  const { name, age } = req.body;
+  // Here you would typically save the user to a database
+  res.status(201).json({ message: 'User created successfully', user: { name, age } });
+});
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+```
+In this example, we create an Express API that includes a custom middleware function called `validateRequestBody` to validate the incoming request bodies for the `/users` endpoint. The middleware checks if the `name` field is a string with at least 3 characters and if the `age` field is a non-negative number. If the validation fails, it responds with a 400 status code and an error message. If the validation passes, it calls `next()` to proceed to the route handler, which simulates creating a new user and responds with a success message and the user data. This demonstrates how to implement request body validation in an Express API without using any external libraries.
+
+## Write a Node.js script to read large files line-by-line using streams.
+```javascript
+const fs = require('fs');
+const readline = require('readline');
+const filePath = 'path/to/large/file.txt';
+const readStream = fs.createReadStream(filePath);
+const rl = readline.createInterface({
+  input: readStream,
+  crlfDelay: Infinity
+});
+rl.on('line', (line) => {
+  // Process each line of the file here
+  console.log(`Line from file: ${line}`);
+});
+rl.on('close', () => {
+  console.log('Finished reading the file.');
+});
+```
+In this example, we use the `fs` module to create a readable stream for the specified file and the `readline` module to read the file line-by-line. The `readline.createInterface` method is used to create an interface that reads from the stream, and we listen for the 'line' event to process each line of the file as it is read. Finally, we listen for the 'close' event to know when we have finished reading the file. This approach allows us to efficiently read large files without loading the entire file into memory at once.
+
+```javascript
+const fs = require('fs');
+const filePath = 'path/to/large/file.txt';
+const readStream = fs.createReadStream(filePath, { encoding: 'utf8' });
+let remaining = '';
+readStream.on('data', (chunk) => {
+  remaining += chunk;
+  let index;
+  while ((index = remaining.indexOf('\n')) > -1) {
+    const line = remaining.slice(0, index);
+    remaining = remaining.slice(index + 1);
+    // Process each line of the file here
+    console.log(`Line from file: ${line}`);
+  }
+});
+readStream.on('end', () => {
+  if (remaining.length > 0) {
+    // Process the last line if it exists
+    console.log(`Line from file: ${remaining}`);
+  }
+  console.log('Finished reading the file.');
+});
+```
+In this alternative example, we create a readable stream for the specified file and listen for the 'data' event to receive chunks of data as they are read. We accumulate the chunks in a `remaining` variable and check for newline characters to identify complete lines. When a complete line is found, we process it and remove it from the `remaining` variable. Finally, we listen for the 'end' event to handle any remaining data that may not end with a newline character and to indicate that we have finished reading the file. This method also allows us to efficiently read large files without loading the entire file into memory at once.
+
+## Create a utility function to sanitize user input to prevent XSS.
+```javascript
+function sanitizeInput(input) {
+  return input.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#x27;')
+              .replace(/\//g, '&#x2F;');
+}
+// Example usage
+const userInput = '<script>alert("XSS Attack!");</script>';
+const sanitizedInput = sanitizeInput(userInput);
+console.log(sanitizedInput); // &lt;script&gt;alert(&quot;XSS Attack!&quot;);&lt;/script&gt;
+```
+In this example, we create a utility function called `sanitizeInput` that takes a string input and replaces special characters with their corresponding HTML entities to prevent Cross-Site Scripting (XSS) attacks. The function replaces characters such as `&`, `<`, `>`, `"`, `'`, and `/` with their safe HTML entity equivalents. This ensures that any potentially malicious code included in user input is rendered harmless when displayed on a web page. The example usage demonstrates how to sanitize a string that contains a script tag, which would otherwise be executed if not sanitized.
+
+## Build an API to send OTP via email and verify it.
+```javascript
+const express = require('express');
+const nodemailer = require('nodemailer');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+// Configure nodemailer for email sending
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+// In-memory store for OTPs (replace with a database in production)
+const otpStore = {};
+// Route to send OTP
+app.post('/send-otp', async (req, res) => {
+    const { email } = req.body;
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+    otpStore[email] = otp; // Store OTP against the email
+    await transporter.sendMail({
+        to: email,
+        subject: 'Your OTP Code',
+        text: `Your OTP code is: ${otp}`
+    });
+    res.json({ message: 'OTP sent to your email.' });
+});
+// Route to verify OTP
+app.post('/verify-otp', (req, res) => {
+    const { email, otp } = req.body;
+    if (otpStore[email] && otpStore[email] === otp) {
+        delete otpStore[email]; // Remove OTP after successful verification
+        res.json({ message: 'OTP verified successfully.' });
+    } else {
+        res.status(400).json({ message: 'Invalid OTP.' });
+    }
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we create an Express API with two routes: `/send-otp` and `/verify-otp`. The `/send-otp` route generates a random 6-digit OTP and sends it to the user's email using nodemailer. The OTP is stored in an in-memory object called `otpStore` against the user's email. The `/verify-otp` route checks if the provided OTP matches the one stored for the given email. If it matches, it deletes the OTP from the store and responds with a success message; otherwise, it responds with an error message indicating that the OTP is invalid. This implementation allows users to receive an OTP via email and verify it through the API.
+
+## Write a Node.js program to handle uncaught exceptions and unhandled promise rejections.
+```javascript
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    // Optionally, you can perform cleanup or logging here before exiting
+    process.exit(1); // Exit the process with a non-zero code to indicate an error
+});
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    // Optionally, you can perform cleanup or logging here before exiting
+    process.exit(1); // Exit the process with a non-zero code to indicate an error
+});
+// Example of an uncaught exception
+setTimeout(() => {
+    throw new Error('This is an uncaught exception');
+}, 1000);
+// Example of an unhandled promise rejection
+setTimeout(() => {
+    Promise.reject(new Error('This is an unhandled promise rejection'));
+}, 2000);
+```
+In this example, we set up global handlers for uncaught exceptions and unhandled promise rejections in a Node.js application. The `process.on('uncaughtException')` event is triggered when an exception is thrown but not caught anywhere in the code, while the `process.on('unhandledRejection')` event is triggered when a promise is rejected but not handled with a `.catch()` block. In both handlers, we log the error details to the console and exit the process with a non-zero code to indicate that an error occurred. The example also includes simulated uncaught exceptions and unhandled promise rejections to demonstrate how the handlers work in practice.
+
+## Create an Express middleware to add a unique request ID to each request.
+```javascript
+const express = require('express');
+const { v4: uuidv4 } = require('uuid');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Middleware to add a unique request ID to each request
+app.use((req, res, next) => {
+    req.requestId = uuidv4(); // Generate a unique request ID
+    console.log(`Request ID: ${req.requestId} - ${req.method} ${req.url}`);
+    next(); // Proceed to the next middleware or route handler
+});
+// Sample route
+app.get('/data', (req, res) => {
+    res.json({ message: 'This is some data', requestId: req.requestId });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we create an Express middleware that generates a unique request ID for each incoming request using the `uuid` library. The generated request ID is attached to the `req` object, allowing it to be accessed in subsequent middleware and route handlers. We also log the request ID along with the HTTP method and URL for better traceability in logs. The sample route demonstrates how to include the request ID in the response, which can be useful for debugging and tracking individual requests through the system.
+
+## Write a Node.js script to detect file type from buffer data.
+```javascript
+const fs = require('fs');
+const fileType = require('file-type');
+async function detectFileType(filePath) {
+    const buffer = fs.readFileSync(filePath);
+    const type = await fileType.fromBuffer(buffer);
+    if (type) {
+        console.log(`File type: ${type.mime}, Extension: ${type.ext}`);
+    } else {
+        console.log('Could not detect file type');
+    }
+}
+// Example usage
+detectFileType('path/to/your/file');
+```
+In this example, we use the `file-type` library to detect the file type from buffer data. The `detectFileType` function reads a file into a buffer and then uses the `fileType.fromBuffer` method to determine the MIME type and file extension. If the file type is successfully detected, it logs the MIME type and extension; otherwise, it logs a message indicating that the file type could not be detected. This script can be useful for validating uploaded files or processing files without relying on their extensions.
+
+## Build an API to return API uptime and health status.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+const startTime = Date.now();
+// Route to return API uptime and health status
+app.get('/health', (req, res) => {
+    const uptime = Date.now() - startTime;
+    res.json({
+        status: 'OK',
+        uptime: `${Math.floor(uptime / 1000)} seconds`
+    });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we create an Express API with a `/health` route that returns the API's uptime and health status. The `startTime` variable is initialized when the server starts, and the uptime is calculated by subtracting the `startTime` from the current time whenever the `/health` endpoint is accessed. The response includes a status of 'OK' and the uptime in seconds. This endpoint can be used for monitoring the health of the API and ensuring that it is running as expected.
+
+## Create a Node.js program to limit concurrent async operations.
+```javascript
+class AsyncLimiter {
+    constructor(limit) {
+        this.limit = limit;
+        this.activeCount = 0;
+        this.queue = [];
+    }
+    async run(task) {
+        if (this.activeCount < this.limit) {
+            this.activeCount++;
+            try {
+                await task();
+            } finally {
+                this.activeCount--;
+                if (this.queue.length > 0) {
+                    const nextTask = this.queue.shift();
+                    this.run(nextTask);
+                }
+            }
+        } else {
+            this.queue.push(task);
+        }
+    }
+}
+// Example usage
+const limiter = new AsyncLimiter(2); // Limit to 2 concurrent tasks
+function createTask(id) {
+    return () => new Promise(resolve => {
+        console.log(`Starting task ${id}`);
+        setTimeout(() => {
+            console.log(`Finished task ${id}`);
+            resolve();
+        }, 2000);
+    });
+}
+for (let i = 1; i <= 5; i++) {
+    limiter.run(createTask(i));
+}
+```
+In this example, we define an `AsyncLimiter` class that limits the number of concurrent asynchronous operations. The `run` method checks if the number of active tasks is below the specified limit. If it is, it increments the active count and executes the task. Once the task is completed, it decrements the active count and checks if there are any queued tasks to run next. If the limit has been reached, it adds the task to a queue. The example usage demonstrates how to create multiple tasks and run them through the limiter, ensuring that only a certain number of tasks run concurrently at any given time.
+
+## Write a utility to mask sensitive fields (password, token) in logs.
+```javascript
+function maskSensitiveData(data) {
+    const maskedData = { ...data };
+    if (maskedData.password) {
+        maskedData.password = '****';
+    }
+    if (maskedData.token) {
+        maskedData.token = '****';
+    }
+    return maskedData;
+}
+// Example usage
+const userData = {
+    username: 'john_doe',
+    password: 'mysecretpassword',
+    token: 'abc123token'
+};
+const maskedUserData = maskSensitiveData(userData);
+console.log(maskedUserData); // { username: 'john_doe', password: '****', token: '****' }
+```
+In this example, we create a utility function called `maskSensitiveData` that takes an object as input and returns a new object with sensitive fields such as `password` and `token` masked with asterisks. The function checks if the specified fields exist in the input data and replaces their values with '****'. This utility can be used to ensure that sensitive information is not exposed in logs or other outputs, enhancing the security of the application. The example usage demonstrates how to use the function to mask sensitive fields in a user data object before logging it.
+
+## Implement API versioning with backward compatibility.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Middleware to handle API versioning
+app.use((req, res, next) => {
+    const version = req.headers['api-version'] || '1'; // Default to version 1 if not specified
+    req.apiVersion = version;
+    next();
+});
+// Version 1 of the API
+app.get('/data', (req, res) => {
+    if (req.apiVersion === '1') {
+        res.json({ message: 'This is version 1 of the API' });
+    } else {
+        res.status(400).json({ message: 'Unsupported API version' });
+    }
+});
+// Version 2 of the API
+app.get('/data', (req, res) => {
+    if (req.apiVersion === '2') {
+        res.json({ message: 'This is version 2 of the API with new features' });
+    } else {
+        res.status(400).json({ message: 'Unsupported API version' });
+    }
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we implement API versioning in an Express application by using a middleware that checks for an `api-version` header in the incoming requests. If the header is not provided, it defaults to version 1. The route handler for `/data` checks the API version and responds accordingly. Version 1 returns a simple message, while version 2 can include new features or changes. This approach allows us to maintain backward compatibility while introducing new versions of the API without breaking existing clients that rely on older versions.
+
+## Build a multi-role authentication system (admin, user, manager).
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+// In-memory user store (replace with a database in production)
+const users = [
+    { id: 1, username: 'admin', password: 'adminpass', role: 'admin' },
+    { id: 2, username: 'user', password: 'userpass', role: 'user' },
+    { id: 3, username: 'manager', password: 'managerpass', role: 'manager' }
+];
+// Middleware for authentication
+function authenticate(req, res, next) {
+    const { username, password } = req.headers;
+    const user = users.find(u => u.username === username && u.password === password);
+    if (!user) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    req.user = user; // Attach user to request object
+    next();
+}
+// Middleware for role-based authorization
+function authorize(allowedRoles) {
+    return (req, res, next) => {
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({ message: 'Forbidden: You do not have access to this resource' });
+        }
+        next();
+    };
+}
+// Routes with role-based access control
+app.get('/admin', authenticate, authorize(['admin']), (req, res) => {
+    res.json({ message: 'Welcome, Admin!' });
+});
+app.get('/user', authenticate, authorize(['user']), (req, res) => {
+    res.json({ message: 'Welcome, User!' });
+});
+app.get('/manager', authenticate, authorize(['manager']), (req, res) => {
+    res.json({ message: 'Welcome, Manager!' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we create a multi-role authentication system in an Express application. We have an in-memory user store with different roles (admin, user, manager). The `authenticate` middleware checks the credentials provided in the request headers and attaches the authenticated user to the request object. The `authorize` middleware checks if the authenticated user's role is included in the allowed roles for a specific route. We define routes for each role, and only users with the appropriate role can access their respective routes. This implementation allows us to manage access control based on user roles effectively.
+
+## Implement MongoDB aggregation pipelines for analytics data.
+```javascript
+const mongoose = require('mongoose');
+const orderSchema = new mongoose.Schema({
+    product: String,
+    quantity: Number,
+    price: Number,
+    createdAt: { type: Date, default: Date.now }
+});
+const Order = mongoose.model('Order', orderSchema);
+async function getSalesAnalytics() {
+    const analytics = await Order.aggregate([
+        {
+            $group: {
+                _id: '$product',
+                totalQuantity: { $sum: '$quantity' },
+                totalRevenue: { $sum: { $multiply: ['$quantity', '$price'] } }
+            }
+        },
+        {
+            $sort: { totalRevenue: -1 } // Sort by total revenue in descending order
+        }
+    ]);
+    return analytics;
+}
+// Example usage
+getSalesAnalytics().then(analytics => {
+    console.log('Sales Analytics:', analytics);
+}).catch(err => {
+    console.error('Error fetching analytics:', err);
+});
+```
+In this example, we define a Mongoose schema for an `Order` collection that includes fields for product name, quantity, price, and creation date. We then implement a function called `getSalesAnalytics` that uses MongoDB's aggregation pipeline to group orders by product, calculate the total quantity sold and total revenue for each product, and sort the results by total revenue in descending order. The aggregated analytics data is returned as an array of objects, which can be used for further analysis or reporting. The example usage demonstrates how to call the function and log the analytics results to the console.
+
+## Build a secure session-based authentication system.
+```javascript
+const express = require('express');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
+// In-memory user store (replace with a database in production)
+const users = [
+    { id: 1, username: 'user1', password: bcrypt.hashSync('password1', 10) },
+    { id: 2, username: 'user2', password: bcrypt.hashSync('password2', 10) }
+];
+// Login route
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    const user = users.find(u => u.username === username);
+    if (!user || !bcrypt.compareSync(password, user.password)) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    req.session.userId = user.id; // Store user ID in session
+    res.json({ message: 'Login successful' });
+});
+// Middleware to protect routes
+function isAuthenticated(req, res, next) {
+    if (req.session.userId) {
+        return next();
+    }
+    res.status(401).json({ message: 'Unauthorized' });
+}
+// Protected route
+app.get('/dashboard', isAuthenticated, (req, res) => {
+    res.json({ message: 'Welcome to your dashboard!' });
+});
+// Logout route
+app.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).json({ message: 'Error logging out' });
+        }
+        res.json({ message: 'Logout successful' });
+    });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we create a secure session-based authentication system using Express and the `express-session` middleware. We have an in-memory user store with hashed passwords using bcrypt. The `/login` route authenticates the user and stores their ID in the session. The `isAuthenticated` middleware checks if the user is logged in before allowing access to protected routes like `/dashboard`. The `/logout` route destroys the session to log the user out. This implementation provides a basic structure for session-based authentication while ensuring that sensitive information is securely handled.
+
+## Implement request tracing across microservices.
+```javascript
+const express = require('express');
+const { v4: uuidv4 } = require('uuid');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Middleware to add a unique request ID for tracing
+app.use((req, res, next) => {
+    req.requestId = uuidv4(); // Generate a unique request ID
+    console.log(`Request ID: ${req.requestId} - ${req.method} ${req.url}`);
+    next();
+});
+// Sample route to simulate a microservice call
+app.get('/service-a', (req, res) => {
+    // Simulate calling another microservice (Service B)
+    console.log(`Service A processing request with ID: ${req.requestId}`);
+    // Here you would typically make an HTTP request to Service B, passing the requestId for tracing
+    res.json({ message: 'Response from Service A', requestId: req.requestId });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we implement request tracing across microservices by generating a unique request ID for each incoming request using the `uuid` library. The request ID is attached to the `req` object and logged along with the HTTP method and URL. When simulating a call to another microservice (Service B), we log the request ID to maintain traceability. In a real-world scenario, you would typically pass this request ID in the headers of the HTTP request to Service B, allowing you to trace the entire flow of the request across multiple services. This approach helps in debugging and monitoring distributed systems effectively.
+
+## Build a centralized error-logging service.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware to log errors
+app.use((err, req, res, next) => {
+    console.error(`Error ID: ${req.requestId} - ${err.message}`);
+    res.status(500).json({ message: 'Internal Server Error', errorId: req.requestId });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we create a centralized error-logging service in an Express application. The middleware function is designed to catch any errors that occur during request processing. It logs the error message along with a unique request ID (which can be generated using a similar approach as shown in the previous example) to the console. The response sent back to the client includes a generic error message and the request ID for reference. This allows developers to easily track and debug errors by correlating them with specific requests using the request ID. In a production environment, you would typically log these errors to a file or an external logging service for better monitoring and analysis.
+
+## Implement file encryption before storing on disk or cloud.
+```javascript
+const crypto = require('crypto');
+const fs = require('fs');
+const algorithm = 'aes-256-cbc';
+const secretKey = crypto.randomBytes(32);
+const iv = crypto.randomBytes(16);
+function encryptFile(inputPath, outputPath) {
+    const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
+    const input = fs.createReadStream(inputPath);
+    const output = fs.createWriteStream(outputPath);
+    input.pipe(cipher).pipe(output);
+    output.on('finish', () => {
+        console.log('File encrypted successfully');
+    });
+}
+// Example usage
+encryptFile('path/to/input/file.txt', 'path/to/encrypted/file.enc');
+```
+In this example, we use the `crypto` module to implement file encryption before storing it on disk. The `encryptFile` function takes an input file path and an output file path as arguments. It creates a cipher using the AES-256-CBC algorithm and pipes the input file through the cipher to the output file. Once the encryption process is complete, it logs a success message. This approach ensures that sensitive files are encrypted before being stored, enhancing security when saving files to disk or uploading them to cloud storage.
+
+## Build a scalable notification service ( email + push).
+```javascript
+const express = require('express');
+const nodemailer = require('nodemailer');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+// Configure nodemailer for email sending
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+// Route to send email notification
+app.post('/send-email', async (req, res) => {
+    const { email, subject, message } = req.body;
+    await transporter.sendMail({
+        to: email,
+        subject: subject,
+        text: message
+    });
+    res.json({ message: 'Email notification sent' });
+});
+// Route to send push notification (simulated)
+app.post('/send-push', (req, res) => {
+    const { deviceToken, title, body } = req.body;
+    // Simulate sending a push notification (replace with actual push notification logic)
+    console.log(`Sending push notification to ${deviceToken} with title "${title}" and body "${body}"`);
+    res.json({ message: 'Push notification sent' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we create a scalable notification service using Express. The service includes two routes: one for sending email notifications and another for sending push notifications. The email notification route uses nodemailer to send emails, while the push notification route simulates sending a push notification by logging the details to the console. In a production environment, you would replace the simulated push notification logic with actual integration with a push notification service like Firebase Cloud Messaging (FCM) or Apple Push Notification Service (APNS). This structure allows for easy expansion of the notification service to support additional channels or features in the future.
+
+## Implement horizontal scaling support using clustering.
+```javascript
+const cluster = require('cluster');
+const os = require('os');
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+if (cluster.isMaster) {
+    const numCPUs = os.cpus().length;
+    console.log(`Master process is running. Forking ${numCPUs} workers...`);
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+    }
+    cluster.on('exit', (worker, code, signal) => {
+        console.log(`Worker ${worker.process.pid} died. Forking a new worker...`);
+        cluster.fork();
+    });
+} else {
+    app.get('/', (req, res) => {
+        res.send(`Hello from worker ${process.pid}`);
+    });
+    app.listen(PORT, () => {
+        console.log(`Worker ${process.pid} is listening on port ${PORT}`);
+    });
+}
+```
+In this example, we use the `cluster` module to implement horizontal scaling support in a Node.js application. The master process forks multiple worker processes equal to the number of CPU cores available. Each worker runs an instance of the Express server, allowing the application to handle more concurrent requests by utilizing multiple CPU cores. If a worker process dies, the master process listens for the 'exit' event and forks a new worker to replace it, ensuring that the application remains available and can continue to handle requests without downtime. This approach allows for efficient scaling of the application across multiple CPU cores.
+
+## Design a production deployment strategy for Node.js (PM2, Nginx, CI/CD).
+A production deployment strategy for a Node.js application can involve several components to ensure reliability, scalability, and maintainability. Here's a high-level overview of a deployment strategy using PM2, Nginx, and CI/CD:
+1. **Process Management with PM2**:
+   - Use PM2 to manage the Node.js application processes. PM2 provides features like process monitoring, automatic restarts on crashes, and load balancing across multiple instances.
+   - Start the application using PM2 with a command like `pm2 start app.js --name "my-app" -i max` to run multiple instances based on the number of CPU cores.
+2. **Reverse Proxy with Nginx**:
+   - Set up Nginx as a reverse proxy to route incoming HTTP requests to the Node.js application managed by PM2. This allows for better performance, security, and load balancing.
+   - Configure Nginx to listen on port 80 (or 443 for HTTPS) and proxy requests to the PM2-managed application running on a specific port (e.g., 3000).
+   - Example Nginx configuration:
+   ```nginx
+   server {
+       listen 80;
+       server_name yourdomain.com;
+
+       location / {
+           proxy_pass http://localhost:3000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+       }
+   }
+   ```
+3. **Continuous Integration/Continuous Deployment (CI/CD)**:
+   - Set up a CI/CD pipeline using tools like GitHub Actions, Jenkins, or GitLab CI to automate the testing and deployment process.
+   - The pipeline can include steps for:
+     - Running unit tests and integration tests to ensure code quality.
+     - Building the application and creating a production-ready artifact (e.g., a Docker image).
+     - Deploying the application to the production environment, which can be done using PM2 commands or by pushing the Docker image to a container registry and deploying it on a container orchestration platform like Kubernetes.
+    - Example CI/CD workflow:
+    ```yaml
+    name: CI/CD Pipeline
+    on:
+      push:
+        branches: [ main ]
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v2
+          - name: Set up Node.js
+            uses: actions/setup-node@v2
+            with:
+              node-version: '14'
+          - name: Install dependencies
+            run: npm install
+          - name: Run tests
+            run: npm test
+          - name: Build and deploy
+            run: |
+              npm run build
+              pm2 deploy ecosystem.config.js production
+    ```
+This deployment strategy ensures that the Node.js application is efficiently managed, secure, and can be easily updated with new features or bug fixes through an automated CI/CD pipeline. By using PM2 for process management and Nginx for reverse proxying, the application can handle high traffic and provide a seamless user experience.
+
+## Build a complete authentication flow UI (Signup -> Login -> Logout).
+To build a complete authentication flow UI for a Node.js application, we can use Express for the backend and a simple frontend using HTML, CSS, and JavaScript. Below is an example of how to implement the signup, login, and logout functionality.
+1. **Backend (Node.js with Express)**:
+```javascript
+const express = require('express');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
+// In-memory user store (replace with a database in production)
+const users = [];
+// Signup route
+app.post('/signup', async (req, res) => {
+    const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    users.push({ username, password: hashedPassword });
+    res.json({ message: 'Signup successful' });
+});
+// Login route
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const user = users.find(u => u.username === username);
+    if (!user || !await bcrypt.compare(password, user.password)) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    req.session.userId = user.username; // Store username in session
+    res.json({ message: 'Login successful' });
+});
+// Logout route
+app.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).json({ message: 'Error logging out' });
+        }
+        res.json({ message: 'Logout successful' });
+    });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+2. **Frontend (HTML, CSS, JavaScript)**:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Flow</title>
+</head>
+<body>
+    <h1>Authentication Flow</h1>
+    <div id="signup">
+        <h2>Signup</h2>
+        <input type="text" id="signup-username" placeholder="Username">
+        <input type="password" id="signup-password" placeholder="Password">
+        <button onclick="signup()">Signup</button>
+    </div>
+    <div id="login">
+        <h2>Login</h2>
+        <input type="text" id="login-username" placeholder="Username">
+        <input type="password" id="login-password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+    <div id="logout">
+        <h2>Logout</h2>
+        <button onclick="logout()">Logout</button>
+    </div>
+    <script>
+        async function signup() {
+            const username = document.getElementById('signup-username').value;
+            const password = document.getElementById('signup-password').value;
+            const response = await fetch('/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            alert(data.message);
+        }
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await response.json();
+            alert(data.message);
+        }
+        async function logout() {
+            const response = await fetch('/logout', { method: 'POST' });
+            const data = await response.json();
+            alert(data.message);
+        }
+    </script>
+</body>
+</html>
+```
+In this example, we have a simple Express backend that handles user signup, login, and logout using sessions. The frontend consists of a basic HTML structure with input fields for username and password, and buttons to trigger the respective actions. The JavaScript functions make fetch requests to the backend routes to perform the authentication operations and display the response messages in alerts. This setup provides a complete authentication flow UI for users to interact with.
+
+## Implement complete auth flow (signup, login, logout, refresh token).
+```javascript
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+// In-memory user store (replace with a database in production)
+const users = [];
+// Secret keys for JWT
+const accessTokenSecret = 'your_access_token_secret';
+const refreshTokenSecret = 'your_refresh_token_secret';
+// Signup route
+app.post('/signup', async (req, res) => {
+    const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    users.push({ username, password: hashedPassword });
+    res.json({ message: 'Signup successful' });
+});
+// Login route
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const user = users.find(u => u.username === username);
+    if (!user || !await bcrypt.compare(password, user.password)) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    const accessToken = jwt.sign({ username: user.username }, accessTokenSecret, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ username: user.username }, refreshTokenSecret);
+    res.json({ accessToken, refreshToken });
+});
+// Refresh token route
+app.post('/refresh-token', (req, res) => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+        return res.status(401).json({ message: 'Refresh token required' });
+    }
+    try {
+        const payload = jwt.verify(refreshToken, refreshTokenSecret);
+        const accessToken = jwt.sign({ username: payload.username }, accessTokenSecret, { expiresIn: '15m' });
+        res.json({ accessToken });
+    } catch (err) {
+        res.status(403).json({ message: 'Invalid refresh token' });
+    }
+});
+// Logout route (for demonstration, we won't actually invalidate tokens here)
+app.post('/logout', (req, res) => {
+    res.json({ message: 'Logout successful' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we implement a complete authentication flow that includes signup, login, logout, and refresh token functionality. The backend uses Express and JWT for token-based authentication. When a user logs in, they receive an access token (which expires after 15 minutes) and a refresh token. The refresh token can be used to obtain a new access token without requiring the user to log in again. The logout route is included for demonstration purposes, but in a real application, you would typically implement token invalidation to ensure that tokens cannot be used after logout. This setup provides a secure and efficient authentication flow for users.
+
+## Secure routes using JWT + role-based middleware.
+```javascript
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+// Secret key for JWT
+const secretKey = 'your_secret_key';
+// Middleware to authenticate JWT and check user roles
+function authenticateJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, secretKey, (err, user) => {
+            if (err) {
+                return res.sendStatus(403);
+            }
+            req.user = user; // Attach user info to request
+            next();
+        });
+    } else {
+        res.sendStatus(401);
+    }
+}
+function authorizeRoles(allowedRoles) {
+    return (req, res, next) => {
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.sendStatus(403);
+        }
+        next();
+    };
+}
+// Example protected route for admin role
+app.get('/admin', authenticateJWT, authorizeRoles(['admin']), (req, res) => {
+    res.json({ message: 'Welcome, Admin!' });
+});
+// Example protected route for user role
+app.get('/user', authenticateJWT, authorizeRoles(['user']), (req, res) => {
+    res.json({ message: 'Welcome, User!' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we secure routes using JWT for authentication and role-based middleware for authorization. The `authenticateJWT` middleware checks for the presence of a JWT in the Authorization header and verifies it. If the token is valid, it attaches the user information to the request object. The `authorizeRoles` middleware checks if the authenticated user's role is included in the allowed roles for that route. If not, it returns a 403 Forbidden status. This setup allows us to protect specific routes based on user roles, ensuring that only authorized users can access certain resources.
+
+## Implement account lock after multiple failed login attempts.
+```javascript
+const express = require('express');
+const bcrypt = require('bcrypt');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+// In-memory user store (replace with a database in production)
+const users = [
+    { username: 'user1', password: bcrypt.hashSync('password1', 10), failedAttempts: 0, isLocked: false }
+];
+// Login route with account lockout mechanism
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const user = users.find(u => u.username === username);
+    if (!user) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    if (user.isLocked) {
+        return res.status(403).json({ message: 'Account is locked due to multiple failed login attempts' });
+    }
+    if (!await bcrypt.compare(password, user.password)) {
+        user.failedAttempts++;
+        if (user.failedAttempts >= 5) {
+            user.isLocked = true;
+            return res.status(403).json({ message: 'Account is locked due to multiple failed login attempts' });
+        }
+        return res.status(401).json({ message: 'Invalid credentials' });
+    }
+    user.failedAttempts = 0; // Reset failed attempts on successful login
+    res.json({ message: 'Login successful' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we implement an account lockout mechanism after multiple failed login attempts. Each user object includes a `failedAttempts` counter and an `isLocked` flag. When a user attempts to log in, the system checks if the account is locked. If it is, it returns a 403 Forbidden status. If the login credentials are incorrect, it increments the `failedAttempts` counter. If the counter reaches a specified threshold (e.g., 5), the account is locked by setting the `isLocked` flag to true. On successful login, the `failedAttempts` counter is reset to zero. This approach helps to prevent brute-force attacks by locking accounts after repeated failed login attempts.
+
+## Build OTP-based verification system.
+```javascript
+const express = require('express');
+const nodemailer = require('nodemailer');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.json());
+// In-memory store for OTPs (replace with a database in production)
+const otpStore = {};
+// Configure nodemailer for email sending
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+// Route to request OTP
+app.post('/request-otp', (req, res) => {
+    const { email } = req.body;
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+    otpStore[email] = otp; // Store OTP in memory (use a database in production)
+    transporter.sendMail({
+        to: email,
+        subject: 'Your OTP Code',
+        text: `Your OTP code is: ${otp}`
+    }, (err, info) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error sending OTP' });
+        }
+        res.json({ message: 'OTP sent successfully' });
+    });
+});
+// Route to verify OTP
+app.post('/verify-otp', (req, res) => {
+    const { email, otp } = req.body;
+    if (otpStore[email] && otpStore[email] === otp) {
+        delete otpStore[email]; // Remove OTP after successful verification
+        res.json({ message: 'OTP verified successfully' });
+    } else {
+        res.status(400).json({ message: 'Invalid OTP' });
+    }
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we build an OTP-based verification system using Express and nodemailer. The `/request-otp` route generates a random 6-digit OTP and sends it to the user's email address. The OTP is stored in an in-memory object (`otpStore`) for later verification. The `/verify-otp` route checks if the provided OTP matches the one stored for the given email address. If the OTP is valid, it deletes the OTP from the store and returns a success message. If the OTP is invalid, it returns an error message. In a production environment, you would typically use a database to store OTPs and implement additional security measures such as expiration times for OTPs.
+
+## Implement API request throttling per user.
+```javascript
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// In-memory store for request counts (replace with a database or cache in production)
+const requestCounts = {};
+// Middleware for request throttling
+function throttleRequests(req, res, next) {
+    const userId = req.headers['user-id']; // Assume user ID is sent in headers
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+    }
+    if (!requestCounts[userId]) {
+        requestCounts[userId] = 0;
+    }
+    requestCounts[userId]++;
+    if (requestCounts[userId] > 100) { // Limit to 100 requests per user
+        return res.status(429).json({ message: 'Too many requests. Please try again later.' });
+    }
+    next();
+}
+app.use(throttleRequests);
+// Example route
+app.get('/data', (req, res) => {
+    res.json({ message: 'Here is your data!' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we implement API request throttling per user using Express. The `throttleRequests` middleware checks the number of requests made by each user (identified by a user ID sent in the request headers) and limits it to a specified threshold (e.g., 100 requests). If a user exceeds the limit, the middleware returns a 429 Too Many Requests status. The request counts are stored in an in-memory object (`requestCounts`), but in a production environment, you would typically use a database or caching solution like Redis to manage request counts more efficiently and persistently. This approach helps to prevent abuse of the API and ensures fair usage among users.
+
+## Add MongoDB compound indexes.
+```javascript
+const mongoose = require('mongoose');
+const userSchema = new mongoose.Schema({
+    username: String,
+    email: String,
+    age: Number
+});
+// Create a compound index on username and email
+userSchema.index({ username: 1, email: 1 });
+const User = mongoose.model('User', userSchema);
+```
+In this example, we define a Mongoose schema for a `User` collection that includes fields for username, email, and age. We then create a compound index on the `username` and `email` fields using the `index` method. This compound index allows for efficient querying of users based on both their username and email, improving performance when searching for users with specific combinations of these fields. Compound indexes are particularly useful when you frequently query based on multiple fields together, as they can significantly reduce query execution time.
+
+## Implement user activity tracking (last login, IP address).
+```javascript
+const mongoose = require('mongoose');
+const userSchema = new mongoose.Schema({
+    username: String,
+    lastLogin: Date,
+    lastLoginIP: String
+});
+const User = mongoose.model('User', userSchema);
+// Function to update user activity
+async function updateUserActivity(userId, ipAddress) {
+    await User.findByIdAndUpdate(userId, {
+        lastLogin: new Date(),
+        lastLoginIP: ipAddress
+    });
+}
+// Example usage
+updateUserActivity('user_id_here', '127.0.0.1');
+```
+In this example, we define a Mongoose schema for a `User` collection that includes fields for `username`, `lastLogin`, and `lastLoginIP`. We then implement a function called `updateUserActivity` that takes a user ID and an IP address as parameters. This function updates the user's last login time to the current date and time, and records the IP address from which the user logged in. This activity tracking allows you to monitor user logins and can be useful for security audits, detecting suspicious activity, or providing insights into user behavior.
+
+## Build secure logout by invalidating refresh tokens.
+```javascript
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// In-memory store for refresh tokens (replace with a database in production)
+const refreshTokens = [];
+// Logout route to invalidate refresh tokens
+app.post('/logout', (req, res) => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+        return res.status(400).json({ message: 'Refresh token is required' });
+    }
+    // Remove the refresh token from the store to invalidate it
+    const index = refreshTokens.indexOf(refreshToken);
+    if (index > -1) {
+        refreshTokens.splice(index, 1);
+        return res.json({ message: 'Logout successful' });
+    }
+    res.status(400).json({ message: 'Invalid refresh token' });
+});
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+```
+In this example, we implement a secure logout mechanism by invalidating refresh tokens. The `/logout` route accepts a refresh token in the request body and checks if it exists in the `refreshTokens` array (which serves as an in-memory store for valid refresh tokens). If the token is found, it is removed from the array, effectively invalidating it and preventing any further use of that token to obtain new access tokens. If the token is not found, an error message is returned. In a production environment, you would typically use a database to store refresh tokens and implement additional security measures such as token expiration and blacklisting to enhance the security of the logout process.
+
+## Implement database migration strategy.
+Implementing a database migration strategy is crucial for managing changes to the database schema over time. One popular approach is to use a migration tool that allows you to define and apply migrations in a structured way. Below is an example of how to implement a database migration strategy using a simple migration script in Node.js with MongoDB.
+```javascript
+const mongoose = require('mongoose');
+const migrationSchema = new mongoose.Schema({
+    name: String,
+    appliedAt: Date
+});
+const Migration = mongoose.model('Migration', migrationSchema);
+async function applyMigration(migrationName, migrationFunction) {
+    const existingMigration = await Migration.findOne({ name: migrationName });
+    if (existingMigration) {
+        console.log(`Migration "${migrationName}" has already been applied.`);
+        return;
+    }
+    try {
+        await migrationFunction(); // Execute the migration function
+        await Migration.create({ name: migrationName, appliedAt: new Date() }); // Record the applied migration
+        console.log(`Migration "${migrationName}" applied successfully.`);
+    } catch (error) {
+        console.error(`Error applying migration "${migrationName}":`, error);
+    }
+}
+// Example migration function to add a new field to the User collection
+async function addAgeFieldToUsers() {
+    const userSchema = new mongoose.Schema({
+        username: String,
+        email: String,
+        age: Number // New field added
+    });
+    mongoose.model('User', userSchema);
+}
+// Apply the migration
+applyMigration('add-age-field-to-users', addAgeFieldToUsers);
+```
+In this example, we define a `Migration` model to keep track of applied migrations. The `applyMigration` function checks if a migration with the given name has already been applied. If it has, it logs a message and returns. If not, it executes the provided migration function and records the migration in the database. The example migration function `addAgeFieldToUsers` demonstrates how to add a new field to an existing collection. This approach allows you to manage database schema changes in a controlled manner, ensuring that migrations are applied sequentially and only once. In a production environment, you would typically use a more robust migration tool like `migrate-mongo` or `db-migrate` for better management of complex migrations.
+
+## Create production-ready logging system (Winston / Morgan).
+```javascript
+const express = require('express');
+const winston = require('winston');
+const morgan = require('morgan');
+const app = express();
+const PORT = process.env.PORT || 3000;
+// Configure Winston logger
+const logger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+    ),
+    transports: [
+        new winston.transports.File({ filename: 'error.log', level: 'error' }),
+        new winston.transports.File({ filename: 'combined.log' })
+    ]
+});
+// Use Morgan for HTTP request logging
+app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
+// Example route
+app.get('/', (req, res) => {
+    res.send('Hello, World!');
+});
+app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+});
+```
+In this example, we set up a production-ready logging system using Winston and Morgan in an Express application. Winston is configured to log messages in JSON format with timestamps and to write error-level logs to `error.log` and all logs to `combined.log`. Morgan is used as middleware to log HTTP requests in the 'combined' format, and it writes the logs to the Winston logger. This setup allows for comprehensive logging of both application events and HTTP requests, making it easier to monitor and debug the application in a production environment.

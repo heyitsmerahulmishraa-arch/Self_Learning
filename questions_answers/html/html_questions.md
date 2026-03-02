@@ -12,25 +12,25 @@ The DOCTYPE declaration is an instruction that tells the web browser which versi
 Semantic HTML refers to the use of HTML elements that convey meaning and structure to both the browser and the developer. These elements provide information about the content they contain, making it easier for search engines, screen readers, and other assistive technologies to understand the purpose of the content. Examples of semantic HTML elements include `<header>`, `<nav>`, `<article>`, `<section>`, and `<footer>`.
 Semantic HTML is important because it improves accessibility, SEO (Search Engine Optimization), and maintainability of web pages. By using semantic elements, developers can create more meaningful and organized content, which enhances the user experience and makes it easier for search engines to index and rank the page effectively. Additionally, semantic HTML can help improve the readability of the code, making it easier for developers to understand and maintain the website in the long run.
 
-## What is the difference between <div> and <span>?
+## What is the difference between `<div>` and `<span>`?
 The `<div>` and `<span>` elements are both used for grouping and styling content in HTML, but they serve different purposes. The `<div>` element is a block-level element, which means it starts on a new line and takes up the full width available. It is typically used to group larger sections of content or to create layout structures on a web page.
 The `<span>` element, on the other hand, is an inline element, which means it does not start on a new line and only takes up as much width as necessary. It is used to group smaller pieces of content within a block-level element, such as a portion of text or an image, for styling purposes without affecting the overall layout of the page. In summary, `<div>` is used for larger structural grouping, while `<span>` is used for smaller inline grouping.
 
-## Explain the use of the <meta> tag.
+## Explain the use of the `<meta>` tag.
 The `<meta>` tag is used in the `<head>` section of an HTML document to provide metadata about the web page. Metadata is information about the page that is not displayed to users but can be used by browsers, search engines, and other web services. The `<meta>` tag can specify various types of metadata, such as character encoding, viewport settings for responsive design, author information, and keywords for SEO. For example, the following `<meta>` tag sets the character encoding to UTF-8:
 ```html
 <meta charset="UTF-8">
 ```
 The `<meta>` tag is essential for ensuring that the web page is properly interpreted and displayed by browsers, as well as for improving the page's visibility and ranking in search engine results.
 
-## What is the purpose of the alt attribute in the <img> tag?
+## What is the purpose of the alt attribute in the `<img>` tag?
 The `alt` attribute in the `<img>` tag is used to provide alternative text for an image. This text is displayed if the image cannot be loaded or if the user is using a screen reader. The `alt` attribute is important for accessibility, as it allows visually impaired users to understand the content of the image through assistive technologies. Additionally, the `alt` attribute can improve SEO by providing search engines with information about the image's content. For example:
 ```html
 <img src="image.jpg" alt="A description of the image">
 ```
 In this example, if the image cannot be displayed, the text "A description of the image" will be shown instead, and screen readers will read this text to users who rely on them.
 
-## What is the difference between <strong> and <b>?
+## What is the difference between `<strong>` and `<b>`?
 The `<strong>` and `<b>` tags are both used to emphasize text, but they serve different purposes. The `<strong>` tag is a semantic element that indicates that the text it contains is of strong importance or significance. It conveys meaning to both browsers and assistive technologies, such as screen readers, which may read the text with emphasis.
 The `<b>` tag, on the other hand, is a non-semantic element that simply applies bold styling to the text without conveying any additional meaning. It does not provide any semantic information to browsers or assistive technologies. In summary, `<strong>` is used for emphasizing important content, while `<b>` is used purely for visual styling without implying importance.
 
@@ -41,10 +41,10 @@ HTML entities are special characters that are reserved in HTML and cannot be use
 3. `&amp;` - Represents the ampersand symbol (&)
 These entities allow developers to include special characters in their HTML documents without causing issues with the structure of the code.
 
-## What is the difference between <section>, <article> and <aside>?
+## What is the difference between `<section>`, `<article>` and `<aside>`?
 The `<section>`, `<article>`, and `<aside>` tags are all semantic HTML elements that serve different purposes in structuring content on a web page. The `<section>` tag is used to group related content together, typically with a heading, and is often used to create distinct sections of a page. The `<article>` tag is used to represent a self-contained piece of content that could be distributed independently, such as a blog post, news article, or forum post. The `<aside>` tag is used for content that is tangentially related to the main content, such as sidebars, pull quotes, or advertisements. In summary, `<section>` is for grouping related content, `<article>` is for self-contained content, and `<aside>` is for supplementary content.
 
-## What is the difference between <link> and <script> tags?
+## What is the difference between `<link>` and `<script>` tags?
 The `<link>` and `<script>` tags are both used to include external resources in an HTML document, but they serve different purposes. The `<link>` tag is used to link external stylesheets (CSS) to the HTML document. It is placed in the `<head>` section and has attributes such as `rel` and `href` to specify the relationship and location of the stylesheet. For example:
 ```html
 <link rel="stylesheet" href="styles.css">
@@ -68,7 +68,7 @@ const userRole = userInfo.dataset.role; // "admin"
 ```
 Data attributes provide a flexible way to store and access custom data on HTML elements, making it easier to create dynamic and interactive web pages.
 
-## What is the difference between <iframe> and <embed>?
+## What is the difference between `<iframe>` and `<embed>`?
 The `<iframe>` and `<embed>` tags are both used to include external content in an HTML document, but they serve different purposes. The `<iframe>` tag is used to embed another HTML document within the current document. It creates a nested browsing context, allowing users to interact with the embedded content as if it were a separate web page. For example:
 ```html
 <iframe src="https://www.example.com" width="600" height="400"></iframe>
@@ -89,7 +89,7 @@ Global attributes are attributes that can be applied to any HTML element, regard
 6. `data-*` - Allows for the storage of custom data attributes on the element.
 Global attributes can be used to target elements with CSS or JavaScript, provide additional context for users, and enhance the overall functionality of a web page.
 
-## What is the difference between <figure> and <img>?
+## What is the difference between `<figure>` and `<img>`?
 The `<figure>` and `<img>` tags are both used to display images in HTML, but they serve different purposes. The `<img>` tag is used to embed an image directly into the HTML document. It is a self-closing tag that requires the `src` attribute to specify the location of the image file. For example:
 ```html
 <img src="image.jpg" alt="Description of the image">
@@ -103,7 +103,7 @@ The `<figure>` tag, on the other hand, is a semantic element that is used to gro
 ```
 In summary, the `<img>` tag is used for embedding an image, while the `<figure>` tag is used for grouping an image with its caption, providing a more semantic structure to the content.
 
-## What is the difference between <progress> and <meter>?
+## What is the difference between `<progress>` and `<meter>`?
 The `<progress>` and `<meter>` tags are both used to represent progress or measurement in HTML, but they serve different purposes. The `<progress>` tag is used to display the progress of a task or process, such as a file upload or a download. It typically shows a visual representation of the completion percentage. For example:
 ```html
 <progress value="70" max="100">70%</progress>
@@ -117,7 +117,7 @@ In summary, the `<progress>` tag is used for showing the progress of a task, whi
 ## How does the browser render an HTML page?
 When a browser renders an HTML page, it follows a series of steps to display the content correctly. First, the browser sends a request to the server to retrieve the HTML document. Once the document is received, the browser parses the HTML code to create a Document Object Model (DOM) tree, which represents the structure of the page. As the browser parses the HTML, it also identifies and processes any linked resources, such as CSS stylesheets and JavaScript files. The browser then applies the CSS styles to the elements in the DOM tree, which determines the visual presentation of the page. Finally, the browser executes any JavaScript code, which can manipulate the DOM and add interactivity to the page. The entire rendering process is optimized for performance, allowing users to see the content as quickly as possible while ensuring that the page is displayed correctly across different devices and browsers.
 
-## What is the difference between id and name attributes?
+## What is the difference between `id` and `name` attributes?
 The `id` and `name` attributes are both used to identify elements in HTML, but they serve different purposes. The `id` attribute is a unique identifier for an element within the entire HTML document. It must be unique, meaning that no two elements can have the same `id`. The `id` attribute is often used for targeting elements with CSS or JavaScript. For example:
 ```html
 <div id="header">This is the header</div>
@@ -139,10 +139,10 @@ Web accessibility (a11y) best practices in HTML involve designing and developing
 7. Avoid using content that flashes or blinks, as it can trigger seizures in users with photosensitive epilepsy.
 By following these best practices, developers can create web content that is inclusive and accessible to a wider audience, ensuring that everyone can access and interact with the web effectively.
 
-## What happens if you omit the <html>, <head>, or <body> tags?
+## What happens if you omit the `<html>`, `<head>`, or `<body>` tags?
 If you omit the `<html>`, `<head>`, or `<body>` tags in an HTML document, the browser will still attempt to render the page, but it may not do so correctly. The `<html>` tag is the root element of an HTML document and should contain all other elements. If it is omitted, the browser may not recognize the structure of the document properly. The `<head>` tag contains metadata and links to external resources, such as stylesheets and scripts. If it is omitted, the browser may not apply styles or execute scripts correctly. The `<body>` tag contains the main content of the page. If it is omitted, the browser may not render the content as intended, and it may lead to unexpected behavior. While modern browsers are designed to handle such omissions gracefully, it is best practice to include all necessary tags to ensure that the document is well-structured and renders correctly across different browsers and devices.
 
-## What is the difference between <defer> and <async> attributes in <script>?
+## What is the difference between `<defer>` and `<async>` attributes in `<script>`?
 The `defer` and `async` attributes in the `<script>` tag are both used to control the loading and execution of JavaScript files, but they behave differently. The `defer` attribute tells the browser to download the script file in the background while parsing the HTML document, but it will only execute the script after the entire document has been parsed. This means that deferred scripts will execute in the order they appear in the HTML. For example:
 ```html
 <script src="script1.js" defer></script>
@@ -156,7 +156,7 @@ The `async` attribute, on the other hand, tells the browser to download the scri
 ```
 In this case, either `script1.js` or `script2.js` could execute first, depending on their download times. The `async` attribute is typically used for scripts that do not depend on any other scripts and do not need to wait for the HTML document to be fully parsed, while the `defer` attribute is used for scripts that need to maintain a specific execution order and should only run after the document is ready.
 
-## What is the purpose of the <noscript> tag?
+## What is the purpose of the `<noscript>` tag?
 The `<noscript>` tag is used to provide alternative content for users who have JavaScript disabled in their browsers. It is placed within the `<body>` section of an HTML document and contains content that will only be displayed if JavaScript is not supported or is turned off. This can include messages informing users that certain features of the website may not work without JavaScript, or it can provide alternative navigation options or content. For example:
 ```html
 <noscript>
@@ -172,7 +172,7 @@ ARIA (Accessible Rich Internet Applications) attributes are a set of special att
 ```
 In this example, the `aria-label` attribute provides a descriptive label for the button, while the `aria-hidden` attribute indicates that the button should be hidden from assistive technologies, which can be useful for decorative elements that do not convey meaningful information.
 
-## What is the difference between <template> and <slot>?
+## What is the difference between `<template>` and `<slot>`?
 The `<template>` and `<slot>` tags are both used in web development to create reusable components, but they serve different purposes. The `<template>` tag is used to define a block of HTML that can be cloned and inserted into the document at runtime. It is not rendered as part of the page until it is explicitly used in JavaScript. For example:
 ```html
 <template id="my-template">
@@ -196,7 +196,7 @@ In this example, the `<slot>` tag acts as a placeholder for any content that is 
 ## What is the Shadow DOM?
 The Shadow DOM is a web standard that allows developers to encapsulate a portion of the DOM and its associated styles and scripts, creating a separate, isolated scope for that content. This means that the styles and scripts defined within the Shadow DOM will not affect the rest of the document, and vice versa. The Shadow DOM is often used in the context of Web Components to create reusable and self-contained components that can be easily integrated into different web applications without worrying about style or script conflicts. By using the Shadow DOM, developers can ensure that their components are modular, maintainable, and do not interfere with other parts of the page, leading to better performance and a more consistent user experience.
 
-## What is the difference between <canvas> and <svg>?
+## What is the difference between `<canvas>` and `<svg>`?
 The `<canvas>` and `<svg>` tags are both used for drawing graphics on the web, but they serve different purposes and have different characteristics. The `<canvas>` tag is a bitmap-based drawing surface that allows developers to create dynamic, pixel-based graphics using JavaScript. It is ideal for rendering complex animations, games, and real-time visualizations. The content drawn on a canvas is not part of the DOM and cannot be styled with CSS or manipulated with JavaScript after it has been rendered. For example:
 ```html
 <canvas id="myCanvas" width="200" height="100"></canvas>
@@ -232,7 +232,7 @@ Microdata is a specification that allows developers to embed structured data wit
 ```
 In this example, the `itemscope` attribute indicates that the `div` element contains a structured data item, and the `itemtype` attribute specifies the type of item being described (in this case, a person). The `itemprop` attributes are used to define the properties of the item, such as the name, image, and job title. By using microdata, developers can enhance the semantic meaning of their HTML content, making it more accessible and improving its visibility in search engine results.
 
-## What is the difference between <dialog> and modal components?
+## What is the difference between `<dialog>` and modal components?
 The `<dialog>` tag is a native HTML element that represents a dialog box or a modal window. It provides built-in functionality for displaying and hiding the dialog, as well as handling user interactions such as closing the dialog when the user clicks outside of it or presses the Escape key. The `<dialog>` element can be styled with CSS and controlled with JavaScript, making it a convenient option for creating modal dialogs without relying on external libraries. For example:
 ```html
 <dialog id="myDialog">
@@ -260,7 +260,7 @@ Browser preloading is a performance optimization technique that allows developer
 ```
 In summary, browser preloading techniques help optimize resource loading by allowing developers to specify which resources are critical for the initial page load and which can be loaded in the background. This can lead to faster page loads and a better user experience.
 
-## What is the difference between <link rel=”preload”> and <link rel=”prefetch”>?
+## What is the difference between `<link rel="preload">` and `<link rel="prefetch">`?
 The `preload` and `prefetch` link relations are both used to optimize resource loading, but they serve different purposes. The `preload` link relation is used to indicate that a resource is critical for the current page and should be loaded as soon as possible. This is typically used for resources that are needed for the initial rendering of the page, such as CSS, JavaScript, or fonts. When the browser encounters a `preload` link, it will start fetching the resource immediately, even before it has been discovered in the HTML document.
 ```html
 <link rel="preload" href="styles.css" as="style">
@@ -289,14 +289,14 @@ Internationalization (i18n) in HTML involves designing and developing web conten
 6. Use language-specific resources, such as localized images or videos, to enhance the user experience for different language speakers.
 By following these best practices, developers can create web content that is accessible and user-friendly for a diverse global audience, ensuring that their websites can reach and engage users from different linguistic and cultural backgrounds effectively.
 
-## What is the role of the <time> tag?
+## What is the role of the `<time>` tag?
 The `<time>` tag in HTML is used to represent a specific point in time or a time interval. It provides a standardized way to mark up dates and times in a machine-readable format, which can be useful for search engines, browsers, and assistive technologies. The `<time>` tag can include attributes such as `datetime` to specify the date and time in a format that can be easily parsed by machines. For example:
 ```html
 <time datetime="2024-06-01T12:00:00Z">June 1, 2024 at 12:00 PM UTC</time>
 ```
 In this example, the `datetime` attribute contains the date and time in ISO 8601 format, while the content of the `<time>` tag provides a human-readable representation of that date and time. The `<time>` tag can be used for various purposes, such as marking up event dates, publication dates, or any other time-related information on a web page. By using the `<time>` tag, developers can improve the semantic meaning of their HTML content and enhance its accessibility and search engine optimization (SEO).
 
-## What is the difference between <bdi> and <bdo>?
+## What is the difference between `<bdi>` and `<bdo>`?
 The `<bdi>` (Bidirectional Isolation) and `<bdo>` (Bidirectional Override) tags are both used to control the directionality of text in HTML, but they serve different purposes. The `<bdi>` tag is used to isolate a portion of text that may have a different directionality than the surrounding text. It allows the browser to determine the correct direction for the isolated text based on its content, which can be useful when displaying user-generated content or mixed-language text. For example:
 ```html
 <p>This is a sentence with <bdi>مرحبا</bdi> in it.</p>
@@ -347,3 +347,84 @@ Understanding these HTTP status codes is important for diagnosing issues with HT
 ## What is the difference between Progressive Enhancement and Graceful Degradation?
 Progressive Enhancement and Graceful Degradation are two approaches to web development that focus on ensuring a good user experience across different browsers and devices, but they take different paths to achieve this goal. Progressive Enhancement is a development strategy that starts with a basic, functional version of a web page that works on all browsers and devices. Developers then add enhanced features and functionality for browsers that support them, while ensuring that the core content and functionality remain accessible to users with older or less capable browsers. This approach prioritizes accessibility and ensures that all users can access the content, regardless of their browser capabilities.
 Graceful Degradation, on the other hand, is a development strategy that starts with a fully featured web page designed for modern browsers. Developers then implement fallback solutions or alternative content for older browsers that may not support all the features. This approach focuses on providing a rich experience for users with modern browsers while still allowing users with older browsers to access the content, albeit with a potentially reduced experience. In summary, Progressive Enhancement builds up from a basic experience to enhance functionality, while Graceful Degradation starts with a full experience and degrades it for less capable browsers.
+
+## What is the purpose of the `lang` attribute in the `<html>` tag?
+The `lang` attribute in the `<html>` tag is used to specify the language of the content within the HTML document. This attribute helps search engines, browsers, and assistive technologies understand the language being used on the page, which can improve accessibility and SEO. For example, if the content of the page is in English, you would set the `lang` attribute like this:
+```html
+<html lang="en">
+```
+By providing the correct language code in the `lang` attribute, you can ensure that screen readers and other assistive technologies can accurately interpret and pronounce the content, and search engines can better index the page for relevant search queries. Additionally, it can help with proper text rendering and font selection for different languages.
+
+## How does the browser handle malformed HTML?
+When a browser encounters malformed HTML, it uses a process called "error handling" to attempt to render the page as best as it can. The browser's HTML parser is designed to be forgiving and will try to correct common mistakes in the HTML code, such as missing closing tags, improperly nested elements, or unclosed attributes. The browser will create a Document Object Model (DOM) tree based on the parsed HTML, and if it encounters errors, it will make assumptions about how to structure the DOM to ensure that the content is displayed. However, the way different browsers handle malformed HTML can vary, and it may lead to inconsistent rendering across different browsers. In general, while browsers strive to render malformed HTML gracefully, it is best practice for developers to ensure that their HTML code is well-formed and valid to avoid unexpected behavior and ensure a consistent user experience across all browsers.
+
+## What is the difference between `<main>` and `<body>`?
+The `<main>` and `<body>` tags are both used in HTML to structure the content of a web page, but they serve different purposes. The `<body>` tag is the main container for all the content that is displayed on the web page, including text, images, videos, and other elements. It is a required element in an HTML document and represents the entire content of the page that is visible to users.
+```html
+<body>
+    <!-- All visible content goes here -->
+</body>
+```
+The `<main>` tag, on the other hand, is a semantic element that represents the main content of the document. It is used to indicate the primary content of the page that is unique to that page and is not repeated across multiple pages (such as headers, footers, or navigation). The `<main>` tag should only be used once per page and should contain the core content that is relevant to the specific page.
+```html
+<main>
+    <!-- Main content specific to this page goes here -->
+</main>
+```
+In summary, the `<body>` tag is the overall container for all visible content on the page, while the `<main>` tag is a semantic element that specifically identifies the main content of the page that is unique to that page.
+
+## What are HTML custom data attributes used for in JS frameworks?
+HTML custom data attributes, prefixed with `data-`, are used in JavaScript frameworks to store custom data on HTML elements. These attributes allow developers to embed additional information within the HTML that can be easily accessed and manipulated using JavaScript. For example, you can use a custom data attribute to store a user ID or a product price:
+```html
+<div data-user-id="12345" data-product-price="19.99">Product Info</div>
+```
+In this example, the `data-user-id` and `data-product-price` attributes store custom data that can be accessed in JavaScript using the `dataset` property of the element:
+```javascript
+const productInfo = document.querySelector('div');
+const userId = productInfo.dataset.userId; // "12345"
+const productPrice = productInfo.dataset.productPrice; // "19.99"
+```
+Custom data attributes are particularly useful in JavaScript frameworks for passing information between the HTML and JavaScript code, enabling dynamic behavior and interactivity on web pages without the need for additional hidden input fields or complex data structures. They provide a simple and flexible way to associate data with HTML elements, making it easier to manage state and handle user interactions in web applications.
+
+## What is the difference between `<details>` and `<summary>`?
+The `<details>` and `<summary>` tags are used together to create a collapsible section of content in HTML. The `<details>` tag is the container for the collapsible content, while the `<summary>` tag is used to define the visible heading or summary that users can click on to expand or collapse the content. The `<summary>` element must be a direct child of the `<details>` element, and it serves as the trigger for toggling the visibility of the content within the `<details>` element. For example:
+```html
+<details>
+    <summary>Click to see more details</summary>
+    <p>This is the additional content that will be shown when the summary is clicked.</p>
+</details>
+```
+In this example, the `<summary>` element displays the text "Click to see more details," and when a user clicks on it, the content inside the `<details>` element (the paragraph) will be toggled between visible and hidden. The `<details>` tag provides a simple way to create interactive content that can be expanded or collapsed without the need for JavaScript, while the `<summary>` tag defines the clickable summary that controls the visibility of the content.
+
+## How does HTML affect Core Web Vitals?
+HTML can have a significant impact on Core Web Vitals, which are a set of metrics that measure the user experience of a web page. The three main Core Web Vitals are Largest Contentful Paint (LCP), First Input Delay (FID), and Cumulative Layout Shift (CLS). Properly structured and optimized HTML can help improve these metrics in the following ways:
+1. **Largest Contentful Paint (LCP)**: This metric measures the time it takes for the largest content element on the page to become visible. Optimizing HTML by minimizing render-blocking resources, using efficient image formats, and ensuring that critical content is loaded early can help improve LCP.
+2. **First Input Delay (FID)**: This metric measures the time it takes for the page to respond to the first user interaction. Optimizing HTML by reducing the amount of JavaScript that needs to be executed during the initial load and ensuring that interactive elements are available as soon as possible can help improve FID.
+3. **Cumulative Layout Shift (CLS)**: This metric measures the visual stability of a page by tracking unexpected layout shifts. Properly structuring HTML and using CSS to reserve space for images and other dynamic content can help reduce CLS and improve the overall user experience.
+
+In summary, optimizing HTML structure and content can have a direct impact on Core Web Vitals by improving load times, responsiveness, and visual stability, ultimately leading to a better user experience and potentially higher search engine rankings.
+
+## What is the role of the `<picture>` element?
+The `<picture>` element in HTML is used to provide multiple sources for an image, allowing the browser to choose the most appropriate one based on factors such as screen size, resolution, and format support. This is particularly useful for responsive web design, where different images may be needed for different devices or screen sizes. The `<picture>` element contains one or more `<source>` elements that specify the different image sources and their associated media queries or type attributes. The browser will evaluate the sources in order and use the first one that matches the current conditions. If none of the sources match, the browser will fall back to the `<img>` element within the `<picture>` tag, which serves as a default image. For example:
+```html
+<picture>
+    <source srcset="image-large.jpg" media="(min-width: 800px)">
+    <source srcset="image-medium.jpg" media="(min-width: 400px)">
+    <img src="image-small.jpg" alt="Responsive Image">
+</picture>
+```
+In this example, the browser will use "image-large.jpg" for screens that are at least 800 pixels wide, "image-medium.jpg" for screens that are at least 400 pixels wide, and "image-small.jpg" as a fallback for smaller screens. The `<picture>` element allows developers to optimize image loading and improve performance by serving the most appropriate image based on the user's device and screen size.
+
+## What is the difference between client-side and server-side rendering from an HTML perspective?
+Client-side rendering (CSR) and server-side rendering (SSR) are two approaches to rendering HTML content in web applications. In client-side rendering, the HTML is generated and rendered in the browser using JavaScript. The server typically sends a minimal HTML file with a JavaScript bundle that contains the logic to fetch data and render the content dynamically on the client side. This approach allows for a more interactive user experience but can lead to slower initial load times, especially on slower devices or networks.
+In server-side rendering, the HTML is generated on the server and sent to the client fully formed. The server processes the request, fetches any necessary data, and renders the HTML before sending it to the browser. This approach can lead to faster initial load times and better SEO performance since search engines can easily index the fully rendered HTML. However, it may require more server resources and can result in a less interactive experience if not implemented properly. In summary, client-side rendering generates HTML in the browser using JavaScript, while server-side rendering generates HTML on the server and sends it to the client as a complete document.
+
+## What is view-source vs DOM inspector difference?
+The "view-source" and "DOM inspector" are two different tools used to examine the HTML content of a web page, but they serve different purposes. The "view-source" tool allows you to see the raw HTML code of a web page as it was delivered from the server. This includes all the HTML tags, attributes, and content as it was originally written by the developer. It does not reflect any changes made to the DOM (Document Object Model) after the page has been loaded and rendered in the browser.
+The "DOM inspector," on the other hand, allows you to examine the live DOM of a web page as it exists in the browser. This means that it reflects any changes made to the DOM after the initial page load, such as those made by JavaScript or user interactions. The DOM inspector provides a more dynamic view of the page's structure and content, allowing developers to see how the page is currently rendered and to debug issues related to the DOM. In summary, "view-source" shows the original HTML code from the server, while the "DOM inspector" shows the live, interactive structure of the page as it exists in the browser.
+
+
+## What is the importance of HTML heading hierarchy?
+The HTML heading hierarchy, which consists of `<h1>` through `<h6>` tags, is important for several reasons. First, it provides a clear structure to the content of a web page, making it easier for users to understand the organization and flow of the information. Proper use of headings helps break up content into manageable sections, improving readability and user experience. Second, search engines use the heading hierarchy to understand the main topics and subtopics of a page, which can influence how the page is indexed and ranked in search results. A well-structured heading hierarchy can improve SEO by signaling the relevance and importance of different sections of content. Finally, assistive technologies, such as screen readers, rely on the heading hierarchy to navigate and interpret the content for users with disabilities. Properly structured headings can enhance accessibility by allowing users to quickly jump to relevant sections of the page. In summary, maintaining a clear and logical HTML heading hierarchy is essential for improving readability, SEO, and accessibility on web pages.
+
+

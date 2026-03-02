@@ -600,3 +600,138 @@ element.style.backgroundColor = 'blue'; // This will trigger a repaint because i
 ```
 In this example, changing the `width` of the element triggers a reflow because it affects the layout of the page. On the other hand, changing the `backgroundColor` triggers a repaint because it only affects the visual appearance of the element without altering its layout. Understanding the difference between reflow and repaint is crucial for optimizing performance in web development, as minimizing unnecessary reflows can lead to smoother user experiences.
 
+## What is the difference between visibility: collapse and display: none?
+The `visibility: collapse` and `display: none` CSS properties both affect the visibility of an element, but they behave differently in terms of layout and space allocation. The `display: none` property completely removes the element from the document flow, meaning that it does not take up any space on the page. When an element is set to `display: none`, it is as if it does not exist in the HTML, and other elements will be positioned as if the hidden element were not there.
+```css
+.hidden {
+    display: none;
+}
+```
+The `visibility: collapse` property, on the other hand, hides the element but still reserves the space it would have occupied in the layout. This means that while the element is not visible, it still affects the positioning of other elements on the page. The `visibility: collapse` property is primarily used for table rows and columns, where it can collapse the row or column while still maintaining the overall structure of the table.
+```css
+.collapsed {
+    visibility: collapse;
+}
+```
+In summary, `display: none` removes the element from the document flow and does not take up any space, while `visibility: collapse` hides the element but still reserves its space in the layout.
+
+## What are modern CSS reset strategies?
+Modern CSS reset strategies involve using a more minimalistic approach to reset styles across different browsers while still allowing for some default styling. Instead of completely stripping all styles, modern resets often use a "normalize" approach, which aims to make built-in browser styles consistent across different platforms. This can be achieved using libraries like Normalize.css or by creating a custom reset that targets specific elements and properties. The goal is to provide a clean slate for styling while maintaining some of the useful default styles that browsers provide, such as form controls and typography. This approach helps to reduce the amount of CSS needed to achieve a consistent look across browsers while still allowing for flexibility in design.
+`Example of a modern CSS reset:`
+```css
+/* A simple modern CSS reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Ensures that padding and border are included in the element's total width and height */
+}
+body {
+  font-family: Arial, sans-serif; /* Sets a default font for the body */
+  line-height: 1.5; /* Sets a default line height for better readability */
+}
+```
+In this example, the universal selector `*` is used to reset the margin and padding of all elements to zero and set the `box-sizing` property to `border-box`, which makes it easier to manage element dimensions. The `body` selector sets a default font and line height for better readability. This modern CSS reset provides a clean starting point for styling while still allowing for some default styles that enhance the user experience.
+
+## What is `:is()` and `:where()`?
+The `:is()` and `:where()` pseudo-classes in CSS are used to group selectors together, but they have different specificity rules. The `:is()` pseudo-class allows you to group multiple selectors and applies the styles to any element that matches any of the selectors within it. The specificity of the `:is()` pseudo-class is determined by the most specific selector within it. In contrast, the `:where()` pseudo-class also groups selectors together, but it has a specificity of zero, meaning it does not contribute to the overall specificity of the selector. This makes `:where()` useful for applying styles without affecting the specificity of other selectors.
+`Example of :is() and :where():`
+```css
+/* Using :is() to group selectors with varying specificity */
+:is(h1, h2, h3) {
+  color: blue; /* This will apply to all h1, h2, and h3 elements */
+}
+/* Using :where() to group selectors without affecting specificity */
+:where(.button, .link) {
+  color: red; /* This will apply to elements with class .button and .link without increasing specificity */
+}
+```
+In this example, the `:is()` pseudo-class is used to apply a blue color to all `h1`, `h2`, and `h3` elements, and the specificity is determined by the most specific selector within it. The `:where()` pseudo-class is used to apply a red color to elements with the class `.button` and `.link`, but it does not increase the specificity of the selector, allowing other styles to override it if necessary. This illustrates how `:is()` and `:where()` can be used to group selectors while managing specificity in CSS.
+
+## What is logical margin-inline and padding-block?
+Logical properties in CSS, such as `margin-inline` and `padding-block`, are used to define margins and padding in a way that is independent of the writing mode and text direction. The `margin-inline` property sets the margin on the inline axis (left and right in horizontal writing modes, top and bottom in vertical writing modes), while the `padding-block` property sets the padding on the block axis (top and bottom in horizontal writing modes, left and right in vertical writing modes). These properties allow for more flexible and adaptable layouts, especially when dealing with different languages and writing systems, as they automatically adjust based on the writing mode and text direction of the content.
+`Example of logical margin-inline and padding-block:`
+```css
+.element {
+  margin-inline: 20px; /* Sets a margin of 20px on the inline axis */
+  padding-block: 10px; /* Sets a padding of 10px on the block axis */
+}
+```
+In this example, the `.element` class has a `margin-inline` of 20 pixels, which will apply a margin on the left and right sides in horizontal writing modes, and on the top and bottom in vertical writing modes. The `padding-block` of 10 pixels will apply padding on the top and bottom in horizontal writing modes, and on the left and right in vertical writing modes. This allows the element to adapt its margins and padding based on the writing mode and text direction, making it more versatile for different languages and layouts.
+
+## What is fluid typography?
+Fluid typography is a responsive design technique that allows text to scale smoothly across different screen sizes and resolutions. It uses relative units, such as `vw` (viewport width) or `clamp()`, to define font sizes that adjust based on the size of the viewport. This approach ensures that text remains legible and visually appealing on various devices, from small mobile screens to large desktop monitors. Fluid typography helps create a more dynamic and adaptable user experience by allowing text to resize proportionally, rather than relying on fixed font sizes that may not work well across all screen sizes.
+`Example of fluid typography:`
+```css
+.element {
+  font-size: clamp(1rem, 2vw, 3rem); /* The font size will scale between 1rem and 3rem based on the viewport width */
+}
+```
+In this example, the `font-size` of the `.element` class is set using the `clamp()` function, which allows the font size to scale between 1rem (the minimum value) and 3rem (the maximum value) based on the viewport width (2vw). This means that as the viewport size changes, the font size will adjust proportionally, ensuring that it remains legible and visually appealing across different devices. Fluid typography is an effective way to create responsive designs that adapt to various screen sizes without sacrificing readability.
+
+## What is CSS calc()?
+The `calc()` function in CSS is a powerful tool that allows developers to perform calculations to determine the value of a CSS property. It can be used to combine different units (e.g., pixels, percentages, viewport units) and perform mathematical operations such as addition, subtraction, multiplication, and division. This function is particularly useful for creating responsive designs, as it enables developers to create dynamic layouts that adjust based on the size of the viewport or other elements. By using `calc()`, developers can achieve more flexible and precise control over the styling of their web pages.
+`Example of CSS calc():`
+```css
+.element {
+  width: calc(100% - 50px); /* The width will be 100% of the parent element minus 50 pixels */
+}
+```
+In this example, the `width` of the `.element` class is set using the `calc()` function, which calculates the width as 100% of the parent element's width minus 50 pixels. This allows the element to take up the full width of its container while leaving a 50-pixel gap, providing a more flexible and responsive layout. The `calc()` function can be used in various CSS properties, making it a versatile tool for creating dynamic and adaptable designs.
+
+## What is color-gamut and wide-color support?
+The `color-gamut` media feature in CSS is used to detect the color capabilities of a device's display. It allows developers to determine whether a device supports a wide range of colors, such as the P3 color space, which can display more vibrant and saturated colors compared to the standard sRGB color space. By using `color-gamut`, developers can create styles that take advantage of wide-color support on compatible devices, enhancing the visual experience for users with high-quality displays. This is particularly important for images, videos, and other media that can benefit from a broader color range.
+`Example of color-gamut and wide-color support:`
+```css
+@media (color-gamut: p3) {
+  .image {
+    filter: saturate(1.5); /* Increases saturation for devices that support the P3 color gamut */
+  }
+}
+```
+In this example, the `@media` rule checks if the device supports the P3 color gamut. If it does, the `.image` class applies a saturation filter to enhance the colors of images on devices with wide-color support. This allows developers to optimize the visual experience for users with high-quality displays while still providing a fallback for devices that do not support wide colors. By using `color-gamut`, developers can create more vibrant and visually appealing designs that take advantage of modern display technologies.
+
+## What is the difference between currentColor and inherit?
+The `currentColor` and `inherit` values in CSS are both used to reference colors, but they serve different purposes. The `currentColor` value refers to the current color of the element, which is typically defined by the `color` property. It allows developers to use the current text color for other properties, such as `border-color` or `background-color`, without having to specify the color explicitly. This can help maintain consistency in styling and make it easier to update colors across a design.
+```css
+.element {
+  color: blue; /* Sets the text color to blue */
+  border-color: currentColor; /* Uses the current text color (blue) for the border */
+}
+```
+The `inherit` value, on the other hand, is used to explicitly inherit a property value from the parent element. When a property is set to `inherit`, it takes the computed value of that property from its parent element. This can be useful for ensuring that certain styles are consistent across nested elements without having to repeat the same values.
+```css
+.child {
+  color: inherit; /* Inherits the color from the parent element */
+}
+```
+In this example, the `.child` class will inherit the `color` property from its parent element. If the parent element has a color of blue, the child will also have a color of blue. In summary, `currentColor` references the current color of the element for use in other properties, while `inherit` explicitly inherits a property value from the parent element.
+
+## What is CSS masking?
+CSS masking is a technique that allows developers to hide or reveal parts of an element using an image or a gradient as a mask. The `mask` property can be used to specify the mask image, which determines which parts of the element are visible and which are hidden. This technique is useful for creating complex shapes, transitions, and visual effects without needing to manipulate the underlying HTML structure. By using CSS masking, developers can achieve creative designs and animations that enhance the user experience.
+`Example of CSS masking:`
+```css
+.element {
+  width: 200px;
+  height: 200px;
+  background-color: red; /* The element will be red */
+  mask-image: url('mask.png'); /* The mask image will determine which parts of the element are visible */
+}
+```
+In this example, the `.element` class has a red background color, but the `mask-image` property uses an image called `mask.png` to determine which parts of the element are visible. The areas of the mask that are white will allow the red background to show through, while the areas that are black will hide the background, creating a masked effect. CSS masking can be used to create various visual effects and is a powerful tool for enhancing the design of web pages.
+
+## How do you optimize CSS for performance?
+Optimizing CSS for performance involves several strategies to reduce the amount of CSS that needs to be loaded and processed by the browser. Some key techniques include:
+1. Minification: Remove unnecessary whitespace, comments, and characters from CSS files to reduce their size, which can improve load times.
+2. Critical CSS: Extract and inline the CSS that is necessary for rendering above-the-fold content, allowing the browser to render the page faster.
+3. Avoiding @import: Use `<link>` to include CSS files instead of `@import`, as it allows for better performance by enabling parallel loading of CSS resources.
+4. Using shorthand properties: Utilize CSS shorthand properties to reduce the number of declarations and simplify the stylesheet.
+5. Limiting the use of complex selectors: Avoid using overly specific or complex selectors that can slow down the rendering process.
+6. Leveraging browser caching: Set appropriate cache headers for CSS files to allow browsers to cache them, reducing the need to re-download the CSS on subsequent visits.
+7. Using CSS variables: Use CSS variables to reduce repetition and make it easier to maintain the stylesheet.
+By implementing these strategies, developers can optimize their CSS for better performance, resulting in faster load times and an improved user experience.
+`Example of optimizing CSS for performance:`
+```css
+/* Minified CSS */
+.element{color:#333;font-size:16px;margin:10px;padding:20px;}
+```
+In this example, the CSS has been minified by removing unnecessary whitespace and comments, which reduces the file size and can improve load times. Additionally, using shorthand properties (e.g., `margin` and `padding`) helps to simplify the stylesheet and reduce the number of declarations. By optimizing CSS in this way, developers can enhance the performance of their web pages and provide a better experience for users.

@@ -1464,3 +1464,192 @@ provider.register();
 ```
 In this example, we set up observability in a Node.js application by using Winston for logging, Prometheus for metrics, and OpenTelemetry for tracing. We log important events and errors using Winston, track metrics such as the total number of HTTP requests and response times using Prometheus, and instrument our application with OpenTelemetry to collect traces that show the flow of requests through the system. This combination of logs, metrics, and traces provides a comprehensive view of the application's behavior, allowing us to monitor performance, identify issues, and troubleshoot problems effectively.
 
+## What is request lifecycle in Express?
+The request lifecycle in Express refers to the sequence of events that occur when a client makes a request to an Express application. It involves several stages, including:
+1. Request Reception: When a client sends a request to the server, Express receives it and creates a request object (`req`) and a response object (`res`) to handle the incoming request and prepare the outgoing response.
+2. Middleware Execution: Express processes the request through a series of middleware functions. Middleware functions are functions that have access to the request and response objects and can perform various tasks such as logging, authentication, parsing request bodies, and more. Middleware functions are executed in the order they are defined in the application.
+3. Route Handling: After passing through the middleware, Express matches the request to a defined route. If a matching route is found, the corresponding route handler function is executed. The route handler is responsible for processing the request, performing any necessary operations (e.g., querying a database, performing calculations), and sending a response back to the client.
+4. Response Sending: Once the route handler has processed the request, it sends a response back to the client using the response object (`res`). This can include setting headers, sending data, or rendering a view. After the response is sent, the request lifecycle is complete.
+`Example of request lifecycle in Express:`
+```javascript
+const express = require('express');
+const app = express();
+// Middleware function to log requests
+app.use((req, res, next) => {
+  console.log(`Received ${req.method} request for ${req.url}`);
+  next(); // Pass control to the next middleware or route handler
+});
+// Route handler for GET requests to the root path
+app.get('/', (req, res) => {
+  res.send('Hello, World!'); // Send a response back to the client
+});
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+```
+In this example, we have an Express application that demonstrates the request lifecycle. When a client makes a GET request to the root path (`/`), the request is first processed by the middleware function that logs the request method and URL. After logging, the middleware calls `next()` to pass control to the next middleware or route handler. In this case, it moves on to the route handler for the root path, which sends a response back to the client with the message "Hello, World!". This illustrates how the request lifecycle in Express involves receiving a request, processing it through middleware, handling it with a route handler, and sending a response back to the client.
+
+## What is graceful shutdown?
+Graceful shutdown is the process of shutting down an application or server in a way that allows it to complete ongoing tasks and release resources properly before terminating. This is important to ensure that the application does not abruptly terminate while it is still processing requests or performing critical operations, which can lead to data loss, corruption, or other issues. In a graceful shutdown, the application typically stops accepting new requests, waits for existing requests to complete, and then releases any resources such as database connections, file handles, or network sockets before exiting. This approach helps maintain the integrity of the application and provides a better user experience by allowing ongoing operations to finish gracefully rather than being interrupted.
+`Example of implementing graceful shutdown in a Node.js application:`
+```javascript
+const express = require('express');
+const app = express();
+const server = app.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+// Handle graceful shutdown
+function gracefulShutdown() {
+  console.log('Received shutdown signal, shutting down gracefully...');
+  server.close(() => {
+    console.log('Closed out remaining connections');
+    process.exit(0);
+  });
+  // Force shutdown after a timeout if connections do not close
+  setTimeout(() => {
+    console.error('Could not close connections in time, forcing shutdown');
+    process.exit(1);
+  }, 10000); // 10 seconds timeout
+}
+// Listen for termination signals
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
+```
+In this example, we set up a simple Express server and implement a graceful shutdown mechanism. The `gracefulShutdown` function is called when the application receives a termination signal (e.g., SIGTERM or SIGINT). It logs a message indicating that a shutdown signal has been received and then calls `server.close()` to stop accepting new connections and wait for existing connections to finish. If the connections do not close within a specified timeout (10 seconds in this case), the application forces a shutdown by calling `process.exit(1)`. This implementation ensures that the application can shut down gracefully, allowing ongoing operations to complete while also providing a fallback mechanism to prevent hanging if connections do not close in time.
+
+## What is schema validation? (Joi / Zod)
+Schema validation is the process of defining and enforcing rules for the structure and content of data in an application. It helps ensure that the data being processed meets certain criteria, such as type, format, and required fields. In Node.js, libraries like Joi and Zod are commonly used for schema validation.
+Joi is a powerful and flexible schema validation library that allows you to define schemas for your data and validate it against those schemas. It provides a rich set of validation rules and supports complex data structures, making it suitable for validating request payloads, query parameters, and more.
+Zod is another schema validation library that focuses on simplicity and type safety. It allows you to define schemas using a fluent API and provides strong TypeScript support. Zod is designed to be easy to use while still providing robust validation capabilities.
+`Example of using Joi for schema validation:`
+```javascript
+const Joi = require('joi');
+const schema = Joi.object({
+  name: Joi.string().min(3).required(),
+  age: Joi.number().integer().min(0).required(),
+  email: Joi.string().email().required()
+});
+const data = {
+  name: 'John Doe',
+  age: 30,
+  email: 'john.doe@example.com'
+};
+const { error, value } = schema.validate(data);
+if (error) {
+  console.error('Validation error:', error.details);
+} else {
+  console.log('Validation successful:', value);
+}
+```
+In this example, we define a schema using Joi that specifies the expected structure of the data, including the types and validation rules for each field. We then validate a sample data object against the schema. If the validation fails, we log the error details; otherwise, we log the validated value.
+`Example of using Zod for schema validation:`
+```javascript
+const { z } = require('zod');
+const schema = z.object({
+  name: z.string().min(3),
+  age: z.number().int().min(0),
+  email: z.string().email()
+});
+const data = {
+  name: 'John Doe',
+  age: 30,
+  email: 'john.doe@example.com'
+};
+const result = schema.safeParse(data);
+if (!result.success) {
+  console.error('Validation error:', result.error.errors);
+} else {
+  console.log('Validation successful:', result.data);
+}
+```
+In this example, we define a schema using Zod that specifies the expected structure of the data, similar to the Joi example. We then use `safeParse` to validate the data against the schema. If the validation fails, we log the error details; otherwise, we log the validated data. This demonstrates how to use Zod for schema validation in a Node.js application.
+
+## What is MongoDB replica set?
+A MongoDB replica set is a group of MongoDB servers that maintain the same data set, providing redundancy and high availability. A replica set consists of a primary node that receives all write operations and one or more secondary nodes that replicate the data from the primary. If the primary node fails, one of the secondary nodes can be automatically promoted to become the new primary, ensuring that the database remains available. Replica sets also allow for read operations to be distributed across multiple nodes, improving read performance. Additionally, replica sets provide data redundancy, as each node maintains a copy of the data, which helps protect against data loss in case of hardware failures or other issues. Overall, MongoDB replica sets are an essential feature for ensuring the reliability and scalability of MongoDB deployments.
+`Example of setting up a MongoDB replica set:`
+1. Start three MongoDB instances on different ports (e.g., 27017, 27018, 27019) to serve as the primary and secondary nodes.
+2. Connect to one of the instances using the MongoDB shell and initiate the replica set configuration:
+```javascript
+rs.initiate({
+  _id: 'rs0',
+  members: [
+    { _id: 0, host: 'localhost:27017' },
+    { _id: 1, host: 'localhost:27018' },
+    { _id: 2, host: 'localhost:27019' }
+  ]
+});
+```
+3. After the replica set is initiated, you can check the status of the replica set using:
+```javascript
+rs.status();
+```
+In this example, we start three MongoDB instances to form a replica set. We then use the `rs.initiate()` method to configure the replica set, specifying the members and their respective host addresses. Finally, we can check the status of the replica set using `rs.status()`, which will show us the current state of each member (primary, secondary, etc.) and any replication status information. This setup allows for high availability and redundancy in our MongoDB deployment.
+
+## What is sharding in MongoDB?
+Sharding in MongoDB is a method of distributing data across multiple servers or clusters to handle large volumes of data and high throughput. It allows you to horizontally scale your MongoDB deployment by partitioning the data into smaller, more manageable pieces called shards. Each shard is a separate MongoDB instance that holds a subset of the data, and the MongoDB query router (mongos) directs queries to the appropriate shard based on the shard key. Sharding helps improve performance and scalability by allowing you to distribute the load across multiple servers, enabling your application to handle more traffic and larger datasets without sacrificing performance. It also provides fault tolerance, as if one shard goes down, the others can continue to operate, ensuring that your application remains available.
+`Example of setting up sharding in MongoDB:`
+1. Start multiple MongoDB instances to serve as shards (e.g., shard1, shard2, shard3) and a mongos instance to act as the query router.
+2. Connect to the mongos instance using the MongoDB shell and enable sharding for the database:
+```javascript
+sh.enableSharding('myDatabase');
+```
+3. Shard a collection by specifying a shard key:
+```javascript
+sh.shardCollection('myDatabase.myCollection', { shardKey: 1 });
+```
+4. Insert data into the sharded collection, and MongoDB will automatically distribute the data across the shards based on the shard key.
+```javascript
+db.myCollection.insert({ shardKey: 'value1', data: 'some data' });
+db.myCollection.insert({ shardKey: 'value2', data: 'some more data' });
+```
+In this example, we set up sharding in MongoDB by starting multiple instances to serve as shards and a mongos instance to route queries. We then enable sharding for a specific database and shard a collection using a shard key. When we insert data into the sharded collection, MongoDB automatically distributes the data across the shards based on the shard key, allowing for improved performance and scalability as our dataset grows.
+
+## What is CAP theorem?
+The CAP theorem, also known as Brewer's theorem, is a fundamental principle in distributed systems that states that it is impossible for a distributed system to simultaneously provide all three of the following guarantees:
+1. Consistency: Every read operation receives the most recent write or an error. In other words, all nodes in the system see the same data at the same time.
+2. Availability: Every request receives a response, without guarantee that it contains the most recent write. This means that the system is always available to respond to requests, even if some nodes are down or experiencing issues.
+3. Partition Tolerance: The system continues to operate despite arbitrary partitioning due to network failures. This means that the system can handle communication breakdowns between nodes without losing data or becoming unavailable.
+According to the CAP theorem, a distributed system can only guarantee two of these three properties at the same time. For example, a system that prioritizes consistency and partition tolerance may sacrifice availability during network partitions, while a system that prioritizes availability and partition tolerance may sacrifice consistency. Understanding the CAP theorem is crucial for designing and building distributed systems, as it helps developers make informed decisions about which properties to prioritize based on the specific requirements of their application.
+`Example of CAP theorem in a distributed system:`
+1. A distributed database that prioritizes consistency and partition tolerance may choose to become unavailable during network partitions to ensure that all nodes see the same data. In this case, if a network partition occurs, the system may reject requests to maintain consistency, resulting in reduced availability.
+2. A distributed database that prioritizes availability and partition tolerance may choose to allow requests to be processed even during network partitions, but it may return stale data or inconsistent results. In this case, if a network partition occurs, the system may continue to accept requests and return responses, but the data may not be up-to-date or consistent across all nodes.
+3. A distributed database that prioritizes consistency and availability may choose to sacrifice partition tolerance, meaning that if a network partition occurs, the system may become unavailable until the partition is resolved. In this case, the system ensures that all nodes see the same data and that requests are always processed, but it may not be able to handle network failures effectively.
+In this example, we see how different distributed systems may prioritize different properties of the CAP theorem based on their specific requirements and use cases. Understanding the trade-offs between consistency, availability, and partition tolerance is essential for designing and building distributed systems that meet the needs of their users while also being resilient to failures and network issues.
+
+## What is eventual consistency?
+Eventual consistency is a consistency model used in distributed systems where updates to a data item may not be immediately visible to all nodes in the system, but eventually, all nodes will converge to the same state. In an eventually consistent system, when a write operation is performed on one node, it may take some time for that update to propagate to other nodes. During this time, different nodes may have different versions of the data, leading to temporary inconsistencies. However, the system guarantees that if no new updates are made to the data item, all nodes will eventually reflect the same value. Eventual consistency is often used in distributed databases and systems that prioritize availability and partition tolerance over immediate consistency, allowing for better performance and scalability while still ensuring that data will eventually become consistent across the system.
+`Example of eventual consistency in a distributed database:`
+1. Consider a distributed database with three nodes (Node A, Node B, and Node C) that replicate data across each other. When a client writes a new value to Node A, that update may not be immediately visible on Node B and Node C.
+2. After the write operation is performed on Node A, it will propagate the update to Node B and Node C asynchronously. During this time, if a client reads the data from Node B or Node C, it may see the old value instead of the updated value from Node A.
+3. Eventually, after a short period of time, the update will propagate to Node B and Node C, and all nodes will reflect the same value. At this point, the system has achieved eventual consistency, as all nodes have converged to the same state.
+In this example, we see how eventual consistency allows for temporary inconsistencies in a distributed database while still ensuring that all nodes will eventually reflect the same data. This model is particularly useful in scenarios where high availability and partition tolerance are prioritized, as it allows for better performance and scalability while still maintaining the integrity of the data over time.
+
+## What is OAuth 2.0?
+OAuth 2.0 is an open standard for authorization that allows third-party applications to access a user's resources on a server without sharing the user's credentials. It provides a secure and standardized way for users to grant limited access to their resources to applications, such as social media platforms, without exposing their passwords. OAuth 2.0 works by issuing access tokens to the third-party application after the user grants permission. These tokens can then be used by the application to access the user's resources on the server for a specified period of time. OAuth 2.0 supports various grant types, including authorization code, implicit, resource owner password credentials, and client credentials, allowing for flexibility in different use cases and scenarios. Overall, OAuth 2.0 is widely used for securing APIs and enabling secure access to resources across different platforms and applications.
+`Example of using OAuth 2.0 for authorization:`
+1. A user wants to use a third-party application (e.g., a social media app) to access their resources on a server (e.g., a photo storage service). The user initiates the authorization process by clicking a "Connect" button in the third-party application.
+2. The third-party application redirects the user to the authorization server (e.g., the photo storage service) where the user is prompted to log in and grant permission for the third-party application to access their resources.
+3. After the user grants permission, the authorization server issues an access token to the third-party application. This token is a string that represents the user's authorization and can be used to access the user's resources on the server.
+4. The third-party application uses the access token to make API requests to the server on behalf of the user. The server validates the access token and, if it is valid, allows the application to access the user's resources as specified by the permissions granted.
+5. The access token may have an expiration time, after which the third-party application will need to request a new token from the authorization server to continue accessing the user's resources.
+
+In this example, we see how OAuth 2.0 enables a user to grant limited access to their resources on a server to a third-party application without sharing their credentials. The user authorizes the application through the authorization server, which issues an access token that the application can use to access the user's resources securely. This process allows for secure and controlled access to resources while protecting the user's credentials and ensuring that permissions are respected.
+
+## What is rate-limit bypass attack?
+A rate-limit bypass attack is a type of attack where an attacker attempts to circumvent the rate-limiting mechanisms implemented by a server or application. Rate limiting is a technique used to control the number of requests a client can make to a server within a specified time frame, helping to prevent abuse and protect against denial-of-service (DoS) attacks. In a rate-limit bypass attack, the attacker may use various methods to evade detection and continue making requests beyond the allowed limits. This can include techniques such as using multiple IP addresses (IP spoofing), rotating user agents, or leveraging proxy servers to distribute requests across different sources. The goal of a rate-limit bypass attack is often to overwhelm the server with excessive requests, leading to degraded performance or even causing the server to become unresponsive. To mitigate this type of attack, it is important for developers and administrators to implement robust rate-limiting strategies, monitor traffic patterns for suspicious activity, and employ additional security measures such as CAPTCHA or authentication requirements for certain actions.
+`Example of a rate-limit bypass attack:`
+1. An attacker targets a web application that has a rate limit of 100 requests per minute for each IP address. The attacker uses a botnet to generate traffic from multiple IP addresses, effectively bypassing the rate limit by distributing the requests across different sources.
+2. The attacker also rotates user agents in the HTTP headers to make the requests appear as if they are coming from different clients, further evading detection by the rate-limiting mechanism.
+3. As a result, the attacker is able to send a large number of requests to the server, overwhelming it and causing performance degradation or even a denial-of-service (DoS) condition, where legitimate users are unable to access the application.
+
+In this example, the attacker successfully bypasses the rate-limiting mechanism by using multiple IP addresses and rotating user agents, allowing them to send more requests than the allowed limit. This highlights the importance of implementing robust rate-limiting strategies and monitoring traffic patterns to detect and mitigate such attacks effectively.
+
+## What is horizontal vs vertical scaling?
+Horizontal scaling, also known as scaling out, involves adding more instances of a resource (e.g., servers, databases) to distribute the load and increase capacity. This approach allows for better fault tolerance and can handle increased traffic by adding more nodes to the system. Vertical scaling, also known as scaling up, involves increasing the resources (e.g., CPU, RAM) of a single instance to improve performance. This approach can be simpler to implement but may have limitations in terms of maximum capacity and can lead to a single point of failure if the instance goes down. Both horizontal and vertical scaling have their advantages and disadvantages, and the choice between them depends on the specific requirements of the application and infrastructure.
+`Example of horizontal scaling:`
+1. A web application is experiencing increased traffic, and the current server is struggling to handle the load. To address this, the application is horizontally scaled by adding more servers to the infrastructure. Each server can handle a portion of the incoming traffic, allowing the application to serve more users simultaneously and improve overall performance.
+`Example of vertical scaling:`
+1. A database server is running out of resources due to increased data volume and query load. To improve performance, the server is vertically scaled by upgrading its hardware, such as adding more CPU cores and increasing RAM. This allows the database to handle more queries and larger datasets without needing to distribute the load across multiple servers. However, this approach may have limitations in terms of maximum capacity and can lead to a single point of failure if the server experiences issues.
+
+
+
